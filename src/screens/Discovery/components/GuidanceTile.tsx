@@ -6,7 +6,6 @@
  * regardless of tile background color.
  */
 import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import { ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -31,28 +30,15 @@ export function GuidanceTile({ item, onPress }: GuidanceTileProps) {
       <ImageBackground
         source={item.image}
         style={styles.tile}
-        imageStyle={{ opacity: 0.6 }} // Soften the image
+        // Scale 1.05 zooms in slightly to hide the white border artifacts in the cropped images
+        imageStyle={{ opacity: 1, transform: [{ scale: 1.05 }] }}
       >
-        <LinearGradient
-          colors={item.gradientColors}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 0.5, y: 1 }} // angle the gradient so the bottom is solid
-          style={StyleSheet.absoluteFill}
-        />
-        
-        {/* Extremely subtle celestial geometry integrated into the background */}
-        <View style={[StyleSheet.absoluteFill, { opacity: 0.08 }]} pointerEvents="none">
-          <PracticePattern width={200} height={100} color={item.iconColor} pattern={item.pattern} />
-        </View>
-
-        {/* Content must be positioned relatively to sit on top of the absolute gradient */}
+        {/* Content sits on top of the image */}
         <View style={styles.content}>
-          {/* Top row: icon + subtle chevron */}
+          {/* Top row: clean icon (no container) + chevron */}
           <View style={styles.topRow}>
-            <View style={styles.iconContainer}>
-              <Ionicons name={item.iconName as any} size={17} color={item.iconColor} />
-            </View>
-            <Ionicons name="chevron-forward-outline" size={16} color={item.iconColor} style={styles.chevron} />
+            <Ionicons name={item.iconName as any} size={20} color={item.iconColor} />
+            <Ionicons name="chevron-forward-outline" size={14} color={item.iconColor} style={styles.chevron} />
           </View>
 
           {/* Bottom row: text */}
@@ -86,31 +72,24 @@ const styles = StyleSheet.create({
   },
   topRow: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
-  },
-  iconContainer: {
-    width: 30,
-    height: 30,
-    borderRadius: Radius.pill,
-    backgroundColor: 'rgba(255,255,255,0.45)',
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: 'flex-start',
   },
   chevron: {
-    opacity: 0.45,
+    opacity: 0.4,
   },
   textGroup: {
     gap: 2,
   },
   title: {
-    ...Typography.label,
+    ...Typography.cardTitle,
+    fontWeight: '700',
     color: Colors.textPrimary,
-    fontWeight: '600',
-    fontSize: 13,
   },
   description: {
-    ...Typography.caption,
-    color: Colors.textSecondary,
+    ...Typography.secondaryBody,
+    fontWeight: '500',
+    color: Colors.textPrimary,
+    opacity: 0.8,
   },
 });
