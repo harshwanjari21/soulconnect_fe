@@ -1,18 +1,37 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router';
+/**
+ * Root Layout — ConsultLive app shell
+ *
+ * Uses expo-router Stack navigator with no header chrome.
+ * BottomNavigation is overlaid as a fixed bottom element.
+ * The Stack manages screen transitions while nav stays persistent.
+ */
 import * as SplashScreen from 'expo-splash-screen';
-import { useColorScheme } from 'react-native';
+import { Stack } from 'expo-router';
+import { useEffect } from 'react';
+import { View, StyleSheet } from 'react-native';
 
-import { AnimatedSplashOverlay } from '@/components/animated-icon';
-import AppTabs from '@/components/app-tabs';
+import { BottomNavigation } from '@/components/navigation/BottomNavigation';
+import { Colors } from '@/theme';
 
 SplashScreen.preventAutoHideAsync();
 
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
+export default function RootLayout() {
+  useEffect(() => {
+    // Hide splash after layout mounts
+    SplashScreen.hideAsync();
+  }, []);
+
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <AnimatedSplashOverlay />
-      <AppTabs />
-    </ThemeProvider>
+    <View style={styles.root}>
+      <Stack screenOptions={{ headerShown: false, animation: 'fade' }} />
+      <BottomNavigation />
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+    backgroundColor: Colors.backgroundPrimary,
+  },
+});
