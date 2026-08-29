@@ -27,7 +27,7 @@ type Props = {
 };
 
 export function PracticePattern({ width, height, color, pattern }: Props) {
-  const op = 0.09;
+  const op = 0.18;
   const cx = width * 0.5;
   const cy = height * 0.5;
   const toRad = (deg: number) => (deg * Math.PI) / 180;

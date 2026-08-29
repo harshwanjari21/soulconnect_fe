@@ -37,7 +37,7 @@ export function DiscoveryHeader({ onNotificationPress }: DiscoveryHeaderProps) {
           width={width}
           height={svgHeight}
           color={Colors.gold}
-          opacity={0.16}
+          opacity={0.30}
           variant="header"
         />
       </View>

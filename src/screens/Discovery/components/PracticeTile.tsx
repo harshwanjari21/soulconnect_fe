@@ -6,11 +6,10 @@
  *   - Ionicons icon (consistent stroke weight)
  *   - Practice name
  */
-import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import { ImageBackground, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 
-import { PracticePattern } from '@/components/common/PracticePattern';
 import type { Practice } from '@/data/discovery';
 import { Colors, Radius, Spacing, Typography } from '@/theme';
 import { SCREEN_PADDING_H } from '@/theme/spacing';
@@ -29,56 +28,59 @@ export function PracticeTile({ item, onPress }: PracticeTileProps) {
   return (
     <TouchableOpacity
       style={[
-        styles.tile,
-        {
-          backgroundColor: item.backgroundColor,
-          width: tileWidth,
-          height: tileHeight,
-        },
+        styles.touchable,
+        { width: tileWidth, height: tileHeight }
       ]}
       onPress={() => onPress?.(item)}
-      activeOpacity={0.88}
+      activeOpacity={0.85}
       accessibilityRole="button"
-      accessibilityLabel={item.title}
+      accessibilityLabel={`Explore ${item.title}`}
     >
-      {/* Practice-specific geometry — barely visible */}
-      <PracticePattern
-        width={tileWidth}
-        height={tileHeight}
-        color={item.iconColor}
-        pattern={item.pattern}
-      />
-
-      {/* Content layer */}
-      <View style={styles.content}>
-        <Ionicons
-          name={item.iconName as any}
-          size={22}
-          color={item.iconColor}
+      <ImageBackground
+        source={item.image}
+        style={styles.tile}
+        imageStyle={{ opacity: 0.95 }}
+      >
+        {/* Dark gradient scrim focused only at the bottom to ensure crisp white text */}
+        <LinearGradient
+          colors={['transparent', 'rgba(0,0,0,0.5)', 'rgba(0,0,0,0.9)']}
+          locations={[0.4, 0.75, 1]}
+          style={StyleSheet.absoluteFill}
         />
-        <Text style={[styles.label, { color: Colors.textPrimary }]} numberOfLines={1}>
-          {item.title}
-        </Text>
-      </View>
+
+        <View style={styles.content}>
+          <Text style={styles.label} numberOfLines={2}>
+            {item.title}
+          </Text>
+        </View>
+      </ImageBackground>
     </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
-  tile: {
-    borderRadius: Radius.md,
+  touchable: {
+    borderRadius: Radius.lg,
     overflow: 'hidden',
-    alignItems: 'center',
-    justifyContent: 'center',
+  },
+  tile: {
+    flex: 1,
   },
   content: {
+    flex: 1,
     alignItems: 'center',
-    gap: Spacing.xs,
-    zIndex: 1,
+    justifyContent: 'flex-end',
+    paddingBottom: Spacing.md,
+    paddingHorizontal: Spacing.xs,
   },
   label: {
     ...Typography.label,
-    fontWeight: '500',
+    fontSize: 15,
+    fontWeight: '600',
     textAlign: 'center',
+    color: Colors.backgroundWhite,
+    textShadowColor: 'rgba(0, 0, 0, 0.9)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 3,
   },
 });

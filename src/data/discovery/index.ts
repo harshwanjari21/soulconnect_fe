@@ -18,8 +18,13 @@ export type GuidanceCategory = {
   description: string;
   /** Ionicons icon name — outline variant */
   iconName: string;
-  backgroundColor: string;
+  /** Gradient color pair for aura effect overlay */
+  gradientColors: readonly [string, string];
+  /** Local required image asset */
+  image: any;
   iconColor: string;
+  /** Subtle background geometry pattern */
+  pattern: 'orbital' | 'stacked' | 'curves' | 'directional' | 'dotgrid' | 'radial';
 };
 
 export const GUIDANCE_CATEGORIES: GuidanceCategory[] = [
@@ -28,48 +33,60 @@ export const GUIDANCE_CATEGORIES: GuidanceCategory[] = [
     title: 'Relationships',
     description: 'Love & compatibility',
     iconName: 'heart-outline',
-    backgroundColor: Colors.peach,
+    gradientColors: ['rgba(255,255,255,0.7)', 'rgba(248,221,210,0.8)'], // fading to peach
+    image: require('../../assets/images/tiles/bg_guidance_relationships_v2.jpg'),
     iconColor: Colors.accentCoral,
+    pattern: 'curves',
   },
   {
     id: 'career',
     title: 'Career & Work',
     description: 'Success & growth',
     iconName: 'briefcase-outline',
-    backgroundColor: Colors.tealSoft,
+    gradientColors: ['rgba(255,255,255,0.7)', 'rgba(220,239,234,0.8)'], // fading to tealSoft
+    image: require('../../assets/images/tiles/bg_guidance_career.jpg'),
     iconColor: Colors.teal,
+    pattern: 'directional',
   },
   {
     id: 'home-family',
     title: 'Home & Family',
     description: 'Stability & harmony',
     iconName: 'home-outline',
-    backgroundColor: Colors.sage,
+    gradientColors: ['rgba(255,255,255,0.7)', 'rgba(228,239,232,0.8)'], // fading to sage
+    image: require('../../assets/images/tiles/bg_guidance_home.jpg'),
     iconColor: Colors.accentForest,
+    pattern: 'stacked',
   },
   {
     id: 'personal-growth',
     title: 'Personal Growth',
     description: 'Clarity & purpose',
     iconName: 'trending-up-outline',
-    backgroundColor: Colors.lavender,
+    gradientColors: ['rgba(255,255,255,0.7)', 'rgba(238,231,245,0.8)'], // fading to lavender
+    image: require('../../assets/images/tiles/bg_guidance_growth.jpg'),
     iconColor: Colors.accentViolet,
+    pattern: 'orbital',
   },
   {
     id: 'money',
     title: 'Money & Finance',
     description: 'Financial guidance',
     iconName: 'wallet-outline',
-    backgroundColor: Colors.goldSoft,
+    gradientColors: ['rgba(255,255,255,0.7)', 'rgba(248,235,207,0.8)'], // fading to goldSoft
+    image: require('../../assets/images/tiles/bg_guidance_money.jpg'),
     iconColor: Colors.accentAmber,
+    pattern: 'dotgrid',
   },
   {
     id: 'life-decisions',
     title: 'Life Decisions',
     description: 'Find your direction',
     iconName: 'compass-outline',
-    backgroundColor: Colors.sky,
+    gradientColors: ['rgba(255,255,255,0.7)', 'rgba(223,240,250,0.8)'], // fading to sky
+    image: require('../../assets/images/tiles/bg_guidance_decisions.jpg'),
     iconColor: Colors.accentOcean,
+    pattern: 'directional',
   },
 ];
 
@@ -81,6 +98,8 @@ export type Practice = {
   /** Ionicons icon name — outline variant */
   iconName: string;
   backgroundColor: string;
+  /** Local required image asset */
+  image: any;
   iconColor: string;
   /** Which SVG geometry pattern to show behind the icon */
   pattern: 'orbital' | 'stacked' | 'curves' | 'directional' | 'dotgrid' | 'radial';
@@ -91,48 +110,54 @@ export const PRACTICES: Practice[] = [
     id: 'astrology',
     title: 'Astrology',
     iconName: 'telescope-outline',
-    backgroundColor: Colors.lavender,
-    iconColor: Colors.accentViolet,
+    backgroundColor: Colors.cosmosPlum,
+    image: require('../../assets/images/tiles/astro-bg.png'),
+    iconColor: Colors.gold,
     pattern: 'orbital',
   },
   {
     id: 'tarot',
     title: 'Tarot',
     iconName: 'layers-outline',
-    backgroundColor: Colors.peach,
-    iconColor: Colors.accentCoral,
+    backgroundColor: Colors.cosmosCrimson,
+    image: require('../../assets/images/tiles/tarot-bg.png'),
+    iconColor: Colors.gold,
     pattern: 'stacked',
   },
   {
     id: 'palmistry',
     title: 'Palmistry',
     iconName: 'hand-left-outline',
-    backgroundColor: Colors.goldSoft,
-    iconColor: Colors.accentAmber,
+    backgroundColor: Colors.cosmosAmber,
+    image: require('../../assets/images/tiles/palm-bg.png'),
+    iconColor: Colors.gold,
     pattern: 'curves',
   },
   {
     id: 'vastu',
     title: 'Vastu',
     iconName: 'grid-outline',
-    backgroundColor: Colors.sage,
-    iconColor: Colors.accentForest,
+    backgroundColor: Colors.cosmosForest,
+    image: require('../../assets/images/tiles/vastu-bg.png'),
+    iconColor: Colors.gold,
     pattern: 'directional',
   },
   {
     id: 'numerology',
     title: 'Numerology',
     iconName: 'calculator-outline',
-    backgroundColor: Colors.tealSoft,
-    iconColor: Colors.teal,
+    backgroundColor: Colors.cosmosNavy,
+    image: require('../../assets/images/tiles/numerology-bg.png'),
+    iconColor: Colors.gold,
     pattern: 'dotgrid',
   },
   {
     id: 'healing',
     title: 'Healing',
     iconName: 'leaf-outline',
-    backgroundColor: Colors.sky,
-    iconColor: Colors.accentOcean,
+    backgroundColor: Colors.cosmosOcean,
+    image: require('../../assets/images/tiles/healing-bg.png'),
+    iconColor: Colors.gold,
     pattern: 'radial',
   },
 ];

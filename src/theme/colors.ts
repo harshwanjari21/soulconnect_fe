@@ -48,6 +48,20 @@ export const Colors = {
   /** Very soft sky — Life Decisions */
   sky: '#DFF0FA',
 
+  // ── Deep Cosmos Backgrounds — Practice tiles ──────────────────────────
+  /** Deep Plum — Astrology */
+  cosmosPlum: '#2A1635',
+  /** Dark Crimson — Tarot */
+  cosmosCrimson: '#3A1616',
+  /** Deep Amber — Palmistry */
+  cosmosAmber: '#3A2A12',
+  /** Midnight Forest — Vastu */
+  cosmosForest: '#122D22',
+  /** Deep Navy — Numerology */
+  cosmosNavy: '#14203A',
+  /** Dark Ocean — Healing */
+  cosmosOcean: '#122F3D',
+
   // ── Semantic Icon Accent Colors ───────────────────────────────────────
   /** Coral — Relationships icon */
   accentCoral: '#C85D45',
