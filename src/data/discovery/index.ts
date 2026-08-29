@@ -60,7 +60,7 @@ export const GUIDANCE_CATEGORIES: GuidanceCategory[] = [
     title: 'Money & Finance',
     description: 'Financial guidance',
     iconName: 'wallet-outline',
-    backgroundColor: Colors.cream,
+    backgroundColor: Colors.goldSoft,
     iconColor: Colors.accentAmber,
   },
   {
@@ -107,7 +107,7 @@ export const PRACTICES: Practice[] = [
     id: 'palmistry',
     title: 'Palmistry',
     iconName: 'hand-left-outline',
-    backgroundColor: Colors.cream,
+    backgroundColor: Colors.goldSoft,
     iconColor: Colors.accentAmber,
     pattern: 'curves',
   },

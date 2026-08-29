@@ -1,75 +1,73 @@
 /**
  * ConsultLive — Centralized Color Tokens
  *
- * All color values for the application must come from this file.
+ * Exact palette as per product design specification.
  * Do NOT hardcode hex values inside components.
  */
 
 export const Colors = {
-  // ── Core backgrounds ─────────────────────────────────────────────────
+  // ── Core Backgrounds ─────────────────────────────────────────────────
   /** Primary warm ivory background */
   backgroundPrimary: '#FCF8F1',
-  /** Pure white — cards, surfaces */
+  /** Soft cream — alternative warm surface */
+  backgroundCream: '#F5EEDF',
+  /** Pure white — cards, surfaces, inputs */
   backgroundWhite: '#FFFFFF',
 
-  // ── Text ─────────────────────────────────────────────────────────────
-  /** Primary text — deep plum (editorial) */
-  textPrimary: '#3F2940',
-  /** Secondary text — muted slate */
+  // ── Typography ───────────────────────────────────────────────────────
+  /** Deep Plum — primary text, headings */
+  textPrimary: '#4A234D',
+  /** Soft Plum — secondary emphasis text */
+  textSoftPlum: '#76527A',
+  /** Muted slate — secondary UI text */
   textSecondary: '#6F7480',
-  /** Tertiary / caption text */
+  /** Tertiary / caption */
   textTertiary: '#9CA3AE',
 
   // ── Brand — Primary Action ────────────────────────────────────────────
   /** ConsultLive primary teal */
   teal: '#168C83',
-  /** Teal lighter tint */
+  /** Teal lighter tint — pressed states */
   tealLight: '#1BA99E',
-  /** Soft teal — backgrounds, highlights */
-  tealSoft: '#E8F5F3',
+  /** Soft teal — backgrounds and highlights */
+  tealSoft: '#DCEFEA',
 
-  // ── Brand — Celestial/Astrology ───────────────────────────────────────
-  /** Astrology gold */
+  // ── Brand — Celestial / Astrology ─────────────────────────────────────
+  /** Warm gold — celestial emphasis */
   gold: '#D7A64A',
-  /** Soft gold — backgrounds */
-  goldSoft: '#FBF3E2',
+  /** Soft gold background */
+  goldSoft: '#F8EBCF',
 
-  // ── Pastel Tile Backgrounds — intentionally very soft ─────────────────
-  /** Very soft blush — Relationships */
-  peach: '#FCF0EB',
-  /** Very soft lavender — Personal Growth */
-  lavender: '#F5F1FB',
-  /** Very soft sage — Home, Career */
-  sage: '#EDF5EF',
-  /** Very soft champagne — Money */
-  cream: '#FBF5E6',
+  // ── Supporting Pastels — tile backgrounds ─────────────────────────────
+  /** Soft peach — Relationships, Promo */
+  peach: '#F8DDD2',
+  /** Soft lavender — Personal Growth */
+  lavender: '#EEE7F5',
+  /** Soft sage — Home & Family, Vastu */
+  sage: '#E4EFE8',
   /** Very soft sky — Life Decisions */
-  sky: '#ECF6FC',
-  /** Very soft rose — alternate */
-  rose: '#FCF0F0',
+  sky: '#DFF0FA',
 
-  // ── Icon accent colors — richer than tile bgs, pairs with pastel ──────
-  /** Warm coral — Relationships icon */
+  // ── Semantic Icon Accent Colors ───────────────────────────────────────
+  /** Coral — Relationships icon */
   accentCoral: '#C85D45',
-  /** Forest teal — Career, Sage items */
+  /** Forest — Home, Vastu icons */
   accentForest: '#2E7A50',
-  /** Deep lavender — Personal Growth */
+  /** Violet — Personal Growth, Astrology icons */
   accentViolet: '#6B50A0',
-  /** Warm amber — Money/Finance */
+  /** Amber — Money/Finance icon */
   accentAmber: '#A07020',
-  /** Ocean blue — Life Decisions */
+  /** Ocean — Life Decisions icon */
   accentOcean: '#2570A0',
 
   // ── Structure ─────────────────────────────────────────────────────────
-  /** Border / divider */
+  /** Standard border */
   border: '#EDE8E0',
   /** Very subtle border */
   borderSubtle: '#F3EEE8',
 
   // ── Status ───────────────────────────────────────────────────────────
-  /** Online availability */
   online: '#28B062',
-  /** Offline */
   offline: '#C2CCD8',
 
   // ── Navigation ───────────────────────────────────────────────────────

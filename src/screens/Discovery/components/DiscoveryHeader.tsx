@@ -1,11 +1,16 @@
 /**
  * DiscoveryHeader — Top section of the Discovery screen
  *
- * Establishes the ConsultLive visual identity immediately:
- *   - "Discover" in editorial serif
- *   - Subtitle in clean sans
- *   - Notification button (white circle)
- *   - Intentional orbital geometry anchored at top-right
+ * Intentionally compact — the status bar safe area is handled by the
+ * parent SafeAreaView. This component only adds minimal breathing space
+ * between the status bar and the "Discover" heading.
+ *
+ * Structure (top to bottom):
+ *   [safe area inset — handled by parent]
+ *   small top padding (8px)
+ *   Content row: "Discover" + subtitle | notification bell
+ *   bottom padding (14px)
+ *   [search below]
  */
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
@@ -20,22 +25,27 @@ type DiscoveryHeaderProps = {
 
 export function DiscoveryHeader({ onNotificationPress }: DiscoveryHeaderProps) {
   const { width } = useWindowDimensions();
-  const headerHeight = 96;
+  // Height is auto — padding-driven, not fixed
+  // We pass a representative height for the SVG canvas
+  const svgHeight = 88;
 
   return (
-    <View style={[styles.container, { height: headerHeight }]}>
-      {/* Orbital geometry — intentional, not decorative */}
-      <CelestialBackground
-        width={width}
-        height={headerHeight}
-        color={Colors.gold}
-        opacity={0.13}
-        variant="header"
-      />
+    <View style={styles.container}>
+      {/* Orbital geometry — uses full width, fixed canvas height for SVG */}
+      <View style={[styles.celestialCanvas, { height: svgHeight }]} pointerEvents="none">
+        <CelestialBackground
+          width={width}
+          height={svgHeight}
+          color={Colors.gold}
+          opacity={0.16}
+          variant="header"
+        />
+      </View>
 
+      {/* Content — sits above the celestial layer visually */}
       <View style={styles.content}>
         <View style={styles.textGroup}>
-          <Text style={styles.title}>Discover</Text>
+          <Text style={styles.title} accessibilityRole="header">Discover</Text>
           <Text style={styles.subtitle}>Astrology, guidance & trusted experts.</Text>
         </View>
 
@@ -44,7 +54,7 @@ export function DiscoveryHeader({ onNotificationPress }: DiscoveryHeaderProps) {
           onPress={onNotificationPress}
           accessibilityRole="button"
           accessibilityLabel="Notifications"
-          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
           <Ionicons name="notifications-outline" size={20} color={Colors.textPrimary} />
         </TouchableOpacity>
@@ -57,18 +67,26 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: Colors.backgroundPrimary,
     overflow: 'hidden',
-    justifyContent: 'flex-end',
-    paddingBottom: Spacing.md,
+    paddingTop: Spacing.sm,           // small breathing space after safe area
+    paddingBottom: Spacing.md + 2,    // 14px — measured breathing before search
     paddingHorizontal: Spacing.lg,
+  },
+  /** Celestial SVG canvas — absolute behind content */
+  celestialCanvas: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    overflow: 'hidden',
   },
   content: {
     flexDirection: 'row',
-    alignItems: 'flex-end',
+    alignItems: 'flex-start',
     justifyContent: 'space-between',
   },
   textGroup: {
     flex: 1,
-    gap: 3,
+    gap: 4,
   },
   title: {
     ...Typography.pageTitle,
@@ -88,6 +106,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.border,
     marginLeft: Spacing.md,
-    marginBottom: 2,
+    marginTop: 2,
   },
 });

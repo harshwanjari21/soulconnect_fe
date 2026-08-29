@@ -1,15 +1,16 @@
 /**
  * DiscoveryScreen — ConsultLive main discovery experience
  *
- * Deliberate vertical rhythm:
- *   Header (96)
- *   ↓ 16  Search
- *   ↓ 28  Guidance
- *   ↓ 32  Practices
- *   ↓ 32  Cosmic Insight
- *   ↓ 32  Experts (full-bleed, manages own padding)
- *   ↓ 32  Promo
- *   ↓ 36  Getting Started
+ * Deliberate vertical rhythm (tightened ~12%):
+ *   [Safe area top inset]
+ *   Header  (padding-driven, compact)
+ *   ↓ 14   Search
+ *   ↓ 22   Guidance categories
+ *   ↓ 28   Explore practices
+ *   ↓ 28   Cosmic Insight
+ *   ↓ 28   Online Experts (full-bleed)
+ *   ↓ 28   Promo offer
+ *   ↓ 32   Getting Started
  *   ↓ nav inset
  */
 import React, { useCallback } from 'react';
@@ -32,6 +33,7 @@ export function DiscoveryScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
+      {/* Header — compact, padding-driven, not fixed height */}
       <DiscoveryHeader onNotificationPress={handleNotification} />
 
       <ScrollView
@@ -40,38 +42,38 @@ export function DiscoveryScreen() {
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
-        {/* Search — 16 below header */}
-        <View style={[styles.padded, { marginTop: Spacing.lg }]}>
+        {/* Search — 14px below header */}
+        <View style={[styles.padded, { marginTop: 14 }]}>
           <SearchBar />
         </View>
 
-        {/* Guidance — 28 gap */}
-        <View style={[styles.padded, { marginTop: 28 }]}>
+        {/* Guidance categories — 22px gap */}
+        <View style={[styles.padded, { marginTop: 22 }]}>
           <GuidanceGrid />
         </View>
 
-        {/* Practices — 32 gap */}
-        <View style={[styles.padded, { marginTop: Spacing['3xl'] }]}>
+        {/* Explore practices — 28px gap */}
+        <View style={[styles.padded, { marginTop: Spacing['3xl'] - Spacing.xs }]}>
           <PracticeGrid />
         </View>
 
-        {/* Cosmic Insight — 32 gap */}
-        <View style={[styles.padded, { marginTop: Spacing['3xl'] }]}>
+        {/* Cosmic Insight — 28px gap */}
+        <View style={[styles.padded, { marginTop: Spacing['3xl'] - Spacing.xs }]}>
           <CosmicInsight />
         </View>
 
-        {/* Expert list — 32 gap, full bleed (manages own padding) */}
-        <View style={{ marginTop: Spacing['3xl'] }}>
+        {/* Expert list — 28px gap, full-bleed (manages own padding) */}
+        <View style={{ marginTop: Spacing['3xl'] - Spacing.xs }}>
           <ExpertList />
         </View>
 
-        {/* Promo — 32 gap */}
-        <View style={[styles.padded, { marginTop: Spacing['3xl'] }]}>
+        {/* Promo offer — 28px gap */}
+        <View style={[styles.padded, { marginTop: Spacing['3xl'] - Spacing.xs }]}>
           <PromoSection />
         </View>
 
-        {/* Getting Started — 36 gap */}
-        <View style={[styles.padded, { marginTop: Spacing['3xl'] + Spacing.xs }]}>
+        {/* Getting Started — 32px gap */}
+        <View style={[styles.padded, { marginTop: Spacing['3xl'] }]}>
           <GettingStarted />
         </View>
 
@@ -91,8 +93,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    // No gap here — each section defines its own top margin
-    // for deliberate, individual control over the rhythm
+    // Individual marginTop per section for deliberate rhythm control
   },
   padded: {
     paddingHorizontal: SCREEN_PADDING_H,

@@ -1,19 +1,22 @@
 /**
  * CelestialBackground — Intentional orbital system geometry
  *
- * Uses react-native-svg to render partial orbital arcs, radial structure,
- * and tiny position markers — referencing astrological chart geometry.
+ * Renders partial orbital arcs, radial spokes, and tiny planet-position
+ * markers referencing astrological chart geometry.
  *
- * The effect should read as "celestial" subconsciously without being
- * consciously noticed as decoration. Keep opacity very low (0.08–0.15).
+ * Design intent:
+ *   "Visible on inspection, not consciously noticed as decoration."
+ *   The user should subconsciously register 'celestial' — not see stickers.
+ *
+ * Opacity range: 0.12–0.18 for header, 0.14–0.20 for insight card.
  *
  * Variants:
- *   header  — partial arcs + position dots, anchored at top-right
- *   insight — fuller chart-wheel geometry, anchored at right-center
- *   tile    — extremely minimal single arc per tile corner
+ *   header  — partial orbital arcs anchored upper-right, radii scale off width
+ *   insight — fuller chart-wheel reference, zodiac tick marks
+ *   tile    — single minimal arc at corner (nearly invisible)
  */
 import React from 'react';
-import Svg, { Circle, G, Line, Path } from 'react-native-svg';
+import Svg, { Circle, Line, Path } from 'react-native-svg';
 
 type Props = {
   width: number;
@@ -23,41 +26,38 @@ type Props = {
   variant?: 'header' | 'insight' | 'tile';
 };
 
-/** Tiny orbit position dot — like a planet marker on a chart */
-function OrbitDot({
-  cx, cy, r, color, opacity,
-}: { cx: number; cy: number; r: number; color: string; opacity: number }) {
-  return <Circle cx={cx} cy={cy} r={r} fill={color} opacity={opacity} />;
+const toRad = (deg: number) => (deg * Math.PI) / 180;
+
+function arcPath(cx: number, cy: number, r: number, startDeg: number, endDeg: number) {
+  const sx = cx + r * Math.cos(toRad(startDeg));
+  const sy = cy + r * Math.sin(toRad(startDeg));
+  const ex = cx + r * Math.cos(toRad(endDeg));
+  const ey = cy + r * Math.sin(toRad(endDeg));
+  const large = endDeg - startDeg > 180 ? 1 : 0;
+  return `M ${sx} ${sy} A ${r} ${r} 0 ${large} 1 ${ex} ${ey}`;
 }
 
 export function CelestialBackground({
   width,
   height,
   color = '#D7A64A',
-  opacity = 0.11,
+  opacity = 0.14,
   variant = 'header',
 }: Props) {
 
-  // ── Header variant ─────────────────────────────────────────────────────────
+  // ── HEADER — orbital arcs anchored upper-right ─────────────────────────────
   if (variant === 'header') {
-    // Anchor point — upper right, partially off-screen
-    const cx = width * 0.92;
-    const cy = -height * 0.05;
+    // Anchor: upper-right corner, slightly outside the frame
+    const cx = width * 0.9;
+    const cy = -8;
 
-    const r1 = height * 0.7;
-    const r2 = height * 1.1;
-    const r3 = height * 1.55;
+    // Radii scale off WIDTH so they adapt to any screen size
+    const r1 = width * 0.28;   // ~90px on 390px wide screen
+    const r2 = width * 0.45;   // ~175px
+    const r3 = width * 0.65;   // ~253px
 
-    // Arc helpers — arc from -135° to 45° (partial orbital arc)
-    const toRad = (deg: number) => (deg * Math.PI) / 180;
-    const arcPath = (r: number, startDeg: number, endDeg: number) => {
-      const sx = cx + r * Math.cos(toRad(startDeg));
-      const sy = cy + r * Math.sin(toRad(startDeg));
-      const ex = cx + r * Math.cos(toRad(endDeg));
-      const ey = cy + r * Math.sin(toRad(endDeg));
-      const large = endDeg - startDeg > 180 ? 1 : 0;
-      return `M ${sx} ${sy} A ${r} ${r} 0 ${large} 1 ${ex} ${ey}`;
-    };
+    // Arc sweep: bottom-left quadrant only (130°–240°) — partial, not full circles
+    const sweep: [number, number] = [120, 250];
 
     return (
       <Svg
@@ -66,68 +66,71 @@ export function CelestialBackground({
         style={{ position: 'absolute', top: 0, left: 0 }}
         pointerEvents="none"
       >
-        {/* Orbital arcs — partial, not complete circles */}
-        <Path d={arcPath(r1, 100, 260)} stroke={color} strokeWidth={0.7} fill="none" opacity={opacity} />
-        <Path d={arcPath(r2, 110, 250)} stroke={color} strokeWidth={0.5} fill="none" opacity={opacity * 0.75} />
-        <Path d={arcPath(r3, 120, 240)} stroke={color} strokeWidth={0.4} fill="none" opacity={opacity * 0.5} />
+        {/* Three partial orbital arcs — progressively fainter */}
+        <Path
+          d={arcPath(cx, cy, r1, ...sweep)}
+          stroke={color} strokeWidth={0.8} fill="none"
+          opacity={opacity}
+        />
+        <Path
+          d={arcPath(cx, cy, r2, ...sweep)}
+          stroke={color} strokeWidth={0.6} fill="none"
+          opacity={opacity * 0.75}
+        />
+        <Path
+          d={arcPath(cx, cy, r3, ...sweep)}
+          stroke={color} strokeWidth={0.4} fill="none"
+          opacity={opacity * 0.5}
+        />
 
-        {/* Two radial spokes from center — like chart axis lines */}
+        {/* Two radial spokes — like chart axis lines pointing into the content */}
         <Line
           x1={cx} y1={cy}
-          x2={cx + r3 * Math.cos(toRad(150))}
-          y2={cy + r3 * Math.sin(toRad(150))}
-          stroke={color} strokeWidth={0.4} opacity={opacity * 0.5}
+          x2={cx + r3 * Math.cos(toRad(145))}
+          y2={cy + r3 * Math.sin(toRad(145))}
+          stroke={color} strokeWidth={0.4} opacity={opacity * 0.55}
         />
         <Line
           x1={cx} y1={cy}
-          x2={cx + r3 * Math.cos(toRad(200))}
-          y2={cy + r3 * Math.sin(toRad(200))}
+          x2={cx + r3 * Math.cos(toRad(195))}
+          y2={cy + r3 * Math.sin(toRad(195))}
           stroke={color} strokeWidth={0.3} opacity={opacity * 0.4}
         />
 
-        {/* Planet position markers on orbital ring 1 */}
-        <OrbitDot
-          cx={cx + r1 * Math.cos(toRad(160))}
-          cy={cy + r1 * Math.sin(toRad(160))}
-          r={2.2} color={color} opacity={opacity * 1.2}
+        {/* Planet position markers — tiny dots on the orbital rings */}
+        {/* Dot on ring 1 at ~170° */}
+        <Circle
+          cx={cx + r1 * Math.cos(toRad(170))}
+          cy={cy + r1 * Math.sin(toRad(170))}
+          r={2.4} fill={color} opacity={opacity * 1.3}
         />
-        <OrbitDot
-          cx={cx + r1 * Math.cos(toRad(220))}
-          cy={cy + r1 * Math.sin(toRad(220))}
-          r={1.5} color={color} opacity={opacity}
+        {/* Dot on ring 1 at ~215° */}
+        <Circle
+          cx={cx + r1 * Math.cos(toRad(215))}
+          cy={cy + r1 * Math.sin(toRad(215))}
+          r={1.6} fill={color} opacity={opacity * 1.1}
         />
-
-        {/* Position marker on ring 2 */}
-        <OrbitDot
-          cx={cx + r2 * Math.cos(toRad(180))}
-          cy={cy + r2 * Math.sin(toRad(180))}
-          r={1.8} color={color} opacity={opacity * 0.9}
+        {/* Dot on ring 2 at ~185° */}
+        <Circle
+          cx={cx + r2 * Math.cos(toRad(185))}
+          cy={cy + r2 * Math.sin(toRad(185))}
+          r={1.8} fill={color} opacity={opacity * 1.0}
         />
       </Svg>
     );
   }
 
-  // ── Insight variant — fuller chart-wheel geometry ─────────────────────────
+  // ── INSIGHT — fuller chart-wheel reference ─────────────────────────────────
   if (variant === 'insight') {
-    const cx = width * 0.8;
+    const cx = width * 0.78;
     const cy = height * 0.5;
 
-    const toRad = (deg: number) => (deg * Math.PI) / 180;
-    const arcPath = (r: number, startDeg: number, endDeg: number) => {
-      const sx = cx + r * Math.cos(toRad(startDeg));
-      const sy = cy + r * Math.sin(toRad(startDeg));
-      const ex = cx + r * Math.cos(toRad(endDeg));
-      const ey = cy + r * Math.sin(toRad(endDeg));
-      const large = endDeg - startDeg > 180 ? 1 : 0;
-      return `M ${sx} ${sy} A ${r} ${r} 0 ${large} 1 ${ex} ${ey}`;
-    };
+    const r1 = 34;
+    const r2 = 58;
+    const r3 = 88;
+    const r4 = 118;
 
-    const r1 = 36;
-    const r2 = 62;
-    const r3 = 95;
-    const r4 = 130;
-
-    // Evenly spaced degree markers (like zodiac position ticks)
+    // 12 evenly-spaced zodiac tick marks around ring 2
     const ticks = Array.from({ length: 12 }, (_, i) => i * 30);
 
     return (
@@ -137,59 +140,55 @@ export function CelestialBackground({
         style={{ position: 'absolute', top: 0, left: 0 }}
         pointerEvents="none"
       >
-        {/* Full rings for inner chart wheel */}
-        <Circle cx={cx} cy={cy} r={r1} stroke={color} strokeWidth={0.8} fill="none" opacity={opacity * 1.2} />
-        <Circle cx={cx} cy={cy} r={r2} stroke={color} strokeWidth={0.6} fill="none" opacity={opacity} />
+        {/* Inner full rings — chart wheel core */}
+        <Circle cx={cx} cy={cy} r={r1} stroke={color} strokeWidth={0.9} fill="none" opacity={opacity * 1.2} />
+        <Circle cx={cx} cy={cy} r={r2} stroke={color} strokeWidth={0.65} fill="none" opacity={opacity} />
 
-        {/* Partial outer arcs */}
-        <Path d={arcPath(r3, -60, 180)} stroke={color} strokeWidth={0.5} fill="none" opacity={opacity * 0.8} />
-        <Path d={arcPath(r4, -40, 160)} stroke={color} strokeWidth={0.3} fill="none" opacity={opacity * 0.5} />
+        {/* Outer partial arcs */}
+        <Path
+          d={arcPath(cx, cy, r3, -70, 185)}
+          stroke={color} strokeWidth={0.5} fill="none" opacity={opacity * 0.8}
+        />
+        <Path
+          d={arcPath(cx, cy, r4, -50, 165)}
+          stroke={color} strokeWidth={0.35} fill="none" opacity={opacity * 0.5}
+        />
 
-        {/* Zodiac-degree tick marks around ring 2 */}
+        {/* Zodiac-degree tick marks */}
         {ticks.map((deg) => {
           const innerR = r2 - 4;
-          const outerR = r2 + 4;
-          const x1 = cx + innerR * Math.cos(toRad(deg));
-          const y1 = cy + innerR * Math.sin(toRad(deg));
-          const x2 = cx + outerR * Math.cos(toRad(deg));
-          const y2 = cy + outerR * Math.sin(toRad(deg));
+          const outerR = r2 + 5;
           return (
             <Line
               key={deg}
-              x1={x1} y1={y1} x2={x2} y2={y2}
-              stroke={color} strokeWidth={0.5}
-              opacity={opacity * 0.7}
+              x1={cx + innerR * Math.cos(toRad(deg))}
+              y1={cy + innerR * Math.sin(toRad(deg))}
+              x2={cx + outerR * Math.cos(toRad(deg))}
+              y2={cy + outerR * Math.sin(toRad(deg))}
+              stroke={color} strokeWidth={0.55} opacity={opacity * 0.75}
             />
           );
         })}
 
-        {/* Chart axis cross */}
+        {/* Cardinal cross axis */}
         <Line x1={cx - r3} y1={cy} x2={cx + r3} y2={cy} stroke={color} strokeWidth={0.35} opacity={opacity * 0.4} />
         <Line x1={cx} y1={cy - r3} x2={cx} y2={cy + r3} stroke={color} strokeWidth={0.35} opacity={opacity * 0.4} />
 
-        {/* Planet dots */}
-        <OrbitDot cx={cx + r2 * Math.cos(toRad(30))} cy={cy + r2 * Math.sin(toRad(30))} r={2.5} color={color} opacity={opacity * 1.1} />
-        <OrbitDot cx={cx + r2 * Math.cos(toRad(150))} cy={cy + r2 * Math.sin(toRad(150))} r={1.8} color={color} opacity={opacity * 0.9} />
-        <OrbitDot cx={cx + r1 * Math.cos(toRad(220))} cy={cy + r1 * Math.sin(toRad(220))} r={1.5} color={color} opacity={opacity} />
+        {/* Planet markers */}
+        <Circle cx={cx + r2 * Math.cos(toRad(30))}  cy={cy + r2 * Math.sin(toRad(30))}  r={2.5} fill={color} opacity={opacity * 1.2} />
+        <Circle cx={cx + r2 * Math.cos(toRad(150))} cy={cy + r2 * Math.sin(toRad(150))} r={1.8} fill={color} opacity={opacity * 1.0} />
+        <Circle cx={cx + r1 * Math.cos(toRad(225))} cy={cy + r1 * Math.sin(toRad(225))} r={1.5} fill={color} opacity={opacity * 0.9} />
 
         {/* Center point */}
-        <Circle cx={cx} cy={cy} r={2.5} fill={color} opacity={opacity * 1.3} />
+        <Circle cx={cx} cy={cy} r={2.5} fill={color} opacity={opacity * 1.4} />
       </Svg>
     );
   }
 
-  // ── Tile variant — almost invisible single arc ────────────────────────────
-  const tcx = width + 10;
-  const tcy = -10;
-  const toRad = (deg: number) => (deg * Math.PI) / 180;
-  const tr = width * 0.65;
-  const arcPath = (r: number, startDeg: number, endDeg: number) => {
-    const sx = tcx + r * Math.cos(toRad(startDeg));
-    const sy = tcy + r * Math.sin(toRad(startDeg));
-    const ex = tcx + r * Math.cos(toRad(endDeg));
-    const ey = tcy + r * Math.sin(toRad(endDeg));
-    return `M ${sx} ${sy} A ${r} ${r} 0 0 1 ${ex} ${ey}`;
-  };
+  // ── TILE — single minimal arc at corner ────────────────────────────────────
+  const tcx = width + 8;
+  const tcy = -8;
+  const tr = width * 0.6;
 
   return (
     <Svg
@@ -198,8 +197,14 @@ export function CelestialBackground({
       style={{ position: 'absolute', top: 0, left: 0 }}
       pointerEvents="none"
     >
-      <Path d={arcPath(tr, 140, 220)} stroke={color} strokeWidth={0.6} fill="none" opacity={opacity} />
-      <Path d={arcPath(tr * 1.4, 140, 220)} stroke={color} strokeWidth={0.4} fill="none" opacity={opacity * 0.6} />
+      <Path
+        d={arcPath(tcx, tcy, tr, 135, 225)}
+        stroke={color} strokeWidth={0.65} fill="none" opacity={opacity}
+      />
+      <Path
+        d={arcPath(tcx, tcy, tr * 1.35, 140, 220)}
+        stroke={color} strokeWidth={0.4} fill="none" opacity={opacity * 0.6}
+      />
     </Svg>
   );
 }
