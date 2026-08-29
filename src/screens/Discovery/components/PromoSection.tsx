@@ -6,6 +6,7 @@
  * Warm peach surface. Teal CTA.
  */
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 
@@ -19,15 +20,20 @@ type PromoSectionProps = {
 export function PromoSection({ onExplorePress }: PromoSectionProps) {
   const { width } = useWindowDimensions();
   const cardWidth = width - Spacing.lg * 2;
-  const cardHeight = 136;
+  const cardHeight = 164;
 
   return (
-    <View style={[styles.card, { width: cardWidth, height: cardHeight }]}>
+    <LinearGradient
+      colors={[Colors.textPrimary, Colors.cosmosPlum]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      style={[styles.card, { width: cardWidth, height: cardHeight }]}
+    >
       <CelestialBackground
         width={cardWidth}
         height={cardHeight}
-        color={Colors.teal}
-        opacity={0.06}
+        color={Colors.gold}
+        opacity={0.28}
         variant="insight"
       />
 
@@ -53,36 +59,40 @@ export function PromoSection({ onExplorePress }: PromoSectionProps) {
           accessibilityLabel="Explore experts"
         >
           <Text style={styles.ctaText}>Explore experts</Text>
-          <Ionicons name="arrow-forward-outline" size={14} color={Colors.backgroundWhite} />
+          <Ionicons name="arrow-forward-outline" size={14} color={Colors.textPrimary} />
         </TouchableOpacity>
       </View>
-    </View>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: Colors.peach,
     borderRadius: Radius.xl,
     overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: Colors.borderSubtle,
+    // Premium soft shadow
+    shadowColor: Colors.textPrimary,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.15,
+    shadowRadius: 24,
+    elevation: 6,
   },
   content: {
     flex: 1,
     paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.md,
-    justifyContent: 'space-between',
+    paddingVertical: Spacing.lg,
+    justifyContent: 'flex-start',
   },
   label: {
     ...Typography.caption,
-    color: Colors.accentCoral,
+    color: Colors.gold,
     fontWeight: '700',
-    letterSpacing: 0.8,
+    letterSpacing: 1.2,
   },
   bodyRow: {
     flexDirection: 'row',
     alignItems: 'flex-start',
+    marginTop: Spacing.sm,
   },
   textBlock: {
     flex: 1,
@@ -90,28 +100,29 @@ const styles = StyleSheet.create({
   },
   headline: {
     ...Typography.sectionHeading,
-    fontSize: 16,
-    lineHeight: 22,
-    color: Colors.textPrimary,
+    color: Colors.backgroundWhite,
   },
   description: {
     ...Typography.secondaryBody,
-    color: Colors.textSecondary,
-    lineHeight: 17,
+    color: Colors.backgroundCream,
+    opacity: 0.85,
+    lineHeight: 18,
   },
   ctaButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.teal,
+    backgroundColor: Colors.gold,
     borderRadius: Radius.pill,
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.xs + 2,
     alignSelf: 'flex-start',
     gap: Spacing.xs,
+    marginTop: Spacing.md,
   },
   ctaText: {
     ...Typography.button,
     fontSize: 13,
-    color: Colors.backgroundWhite,
+    color: Colors.textPrimary,
+    fontWeight: '700',
   },
 });

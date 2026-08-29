@@ -25,7 +25,7 @@ type ExpertCardProps = {
 };
 
 const CARD_WIDTH = 160;
-const IMAGE_HEIGHT = 148;
+const IMAGE_HEIGHT = 160;
 
 export function ExpertCard({ expert, onCallPress, onCardPress }: ExpertCardProps) {
   return (
@@ -47,14 +47,20 @@ export function ExpertCard({ expert, onCallPress, onCardPress }: ExpertCardProps
 
         {/* Availability — integrated into the photo, bottom-left */}
         <View style={styles.availabilityBadgeWrapper}>
-          <View
-            style={[
-              styles.availabilityDot,
-              { backgroundColor: expert.isOnline ? Colors.online : Colors.offline },
-            ]}
-          />
+          {expert.status === 'AVAILABLE' && (
+            <View style={[styles.availabilityDot, { backgroundColor: Colors.online }]} />
+          )}
+          {expert.status === 'IN_SESSION' && (
+            <View style={[styles.availabilityDot, { backgroundColor: Colors.accentAmber }]} />
+          )}
+          {(expert.status === 'SCHEDULED' || expert.status === 'OFFLINE') && (
+            <View style={[styles.availabilityDot, { backgroundColor: 'transparent', borderWidth: 1, borderColor: '#FFFFFF' }]} />
+          )}
+          
           <Text style={styles.availabilityText}>
-            {expert.isOnline ? 'Online' : 'Offline'}
+            {expert.status === 'AVAILABLE' && 'Available'}
+            {expert.status === 'IN_SESSION' && 'In session'}
+            {(expert.status === 'SCHEDULED' || expert.status === 'OFFLINE') && 'Offline'}
           </Text>
         </View>
       </View>
@@ -84,37 +90,41 @@ export function ExpertCard({ expert, onCallPress, onCardPress }: ExpertCardProps
           <Text style={styles.ratingMeta}>· {expert.experienceYears} yrs exp</Text>
         </View>
 
-        {/* Price + CTA — clear bottom row */}
+        {/* Price / Next Available + CTA */}
         <View style={styles.actionRow}>
-          <View>
-            <Text style={styles.price}>₹{expert.pricePerMin}</Text>
-            <Text style={styles.priceUnit}>per min</Text>
+          <View style={styles.priceContainer}>
+            {expert.status === 'IN_SESSION' ? (
+              <Text style={styles.nextAvailable} numberOfLines={2}>
+                Next available{'\n'}<Text style={{ fontWeight: '600', color: Colors.textPrimary }}>{expert.nextAvailableTime}</Text>
+              </Text>
+            ) : (
+              <>
+                <Text style={styles.price}>₹{expert.pricePerMin}</Text>
+                <Text style={styles.priceUnit}>per min</Text>
+              </>
+            )}
           </View>
 
           <TouchableOpacity
             style={[
               styles.callButton,
-              !expert.isOnline && styles.callButtonOffline,
+              (expert.status === 'SCHEDULED' || expert.status === 'OFFLINE') && styles.callButtonSecondary
             ]}
             onPress={() => onCallPress?.(expert)}
-            disabled={!expert.isOnline}
             accessibilityRole="button"
-            accessibilityLabel={
-              expert.isOnline ? `Call ${expert.name}` : `${expert.name} is offline`
-            }
           >
-            <Ionicons
-              name={expert.isOnline ? 'call' : 'call-outline'}
-              size={13}
-              color={expert.isOnline ? Colors.backgroundWhite : Colors.textTertiary}
-            />
             <Text
               style={[
                 styles.callButtonText,
-                !expert.isOnline && styles.callButtonTextOffline,
+                (expert.status === 'SCHEDULED' || expert.status === 'OFFLINE') && styles.callButtonTextSecondary
               ]}
+              numberOfLines={1}
+              adjustsFontSizeToFit
             >
-              {expert.isOnline ? 'Call' : 'Offline'}
+              {expert.status === 'AVAILABLE' && 'Connect'}
+              {expert.status === 'SCHEDULED' && 'Book'}
+              {expert.status === 'IN_SESSION' && 'Notify Me'}
+              {expert.status === 'OFFLINE' && 'View Slots'}
             </Text>
           </TouchableOpacity>
         </View>
@@ -128,10 +138,15 @@ const styles = StyleSheet.create({
     width: CARD_WIDTH,
     backgroundColor: Colors.backgroundWhite,
     borderRadius: Radius.lg,
-    overflow: 'hidden',
     borderWidth: 1,
-    borderColor: Colors.border,
-    ...Shadows.sm,
+    borderColor: Colors.borderSubtle,
+    // Very soft, diffused, premium shadow
+    shadowColor: Colors.textPrimary,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.06,
+    shadowRadius: 24,
+    elevation: 4,
+    overflow: 'hidden',
   },
   imageContainer: {
     width: CARD_WIDTH,
@@ -203,36 +218,48 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-end',
     justifyContent: 'space-between',
-    marginTop: Spacing.xs + 1,
+    marginTop: Spacing.xs,
+  },
+  priceContainer: {
+    flex: 1,
+    paddingRight: 4,
   },
   price: {
     ...Typography.price,
     color: Colors.textPrimary,
-    fontSize: 16,
-    lineHeight: 20,
+    fontSize: 15,
+    lineHeight: 18,
   },
   priceUnit: {
     ...Typography.caption,
     color: Colors.textSecondary,
+    fontSize: 10,
+  },
+  nextAvailable: {
+    ...Typography.caption,
+    color: Colors.textSecondary,
+    fontSize: 10,
+    lineHeight: 14,
   },
   callButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
     backgroundColor: Colors.teal,
     borderRadius: Radius.pill,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.xs + 2,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: 6,
+    minWidth: 70,
+    alignItems: 'center',
   },
-  callButtonOffline: {
-    backgroundColor: Colors.borderSubtle,
+  callButtonSecondary: {
+    backgroundColor: Colors.backgroundCream,
+    borderWidth: 1,
+    borderColor: Colors.border,
   },
   callButtonText: {
     ...Typography.button,
-    fontSize: 12,
+    fontSize: 11,
     color: Colors.backgroundWhite,
   },
-  callButtonTextOffline: {
-    color: Colors.textTertiary,
+  callButtonTextSecondary: {
+    color: Colors.textPrimary,
   },
 });

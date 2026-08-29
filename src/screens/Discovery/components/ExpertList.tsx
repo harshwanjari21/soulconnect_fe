@@ -56,6 +56,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingHorizontal: SCREEN_PADDING_H,
+    paddingVertical: Spacing.lg, // Give the shadow room to breathe without clipping
     gap: Spacing.md,
     paddingRight: SCREEN_PADDING_H + Spacing.sm,
   },

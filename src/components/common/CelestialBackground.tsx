@@ -178,6 +178,11 @@ export function CelestialBackground({
         <Circle cx={cx + r2 * Math.cos(toRad(30))}  cy={cy + r2 * Math.sin(toRad(30))}  r={2.5} fill={color} opacity={opacity * 1.2} />
         <Circle cx={cx + r2 * Math.cos(toRad(150))} cy={cy + r2 * Math.sin(toRad(150))} r={1.8} fill={color} opacity={opacity * 1.0} />
         <Circle cx={cx + r1 * Math.cos(toRad(225))} cy={cy + r1 * Math.sin(toRad(225))} r={1.5} fill={color} opacity={opacity * 0.9} />
+        
+        {/* Extra planet markers added for more detail */}
+        <Circle cx={cx + r3 * Math.cos(toRad(85))} cy={cy + r3 * Math.sin(toRad(85))} r={2.0} fill={color} opacity={opacity * 0.8} />
+        <Circle cx={cx + r4 * Math.cos(toRad(15))} cy={cy + r4 * Math.sin(toRad(15))} r={1.2} fill={color} opacity={opacity * 0.6} />
+        <Circle cx={cx + r3 * Math.cos(toRad(120))} cy={cy + r3 * Math.sin(toRad(120))} r={2.2} fill={color} opacity={opacity * 0.7} />
 
         {/* Center point */}
         <Circle cx={cx} cy={cy} r={2.5} fill={color} opacity={opacity * 1.4} />

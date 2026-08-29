@@ -46,14 +46,14 @@ export const Typography: Record<string, TextStyle> = {
 
   /**
    * Section heading — "Explore practices", "Online Experts"
-   * Sans, semi-bold
+   * Serif, bold, editorial
    */
   sectionHeading: {
-    fontFamily: FontFamilies?.sans,
-    fontSize: 17,
-    fontWeight: '600',
-    lineHeight: 22,
-    letterSpacing: -0.2,
+    fontFamily: FontFamilies?.serif,
+    fontSize: 20,
+    fontWeight: '700',
+    lineHeight: 28,
+    letterSpacing: -0.3,
   },
 
   /**

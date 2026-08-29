@@ -172,7 +172,8 @@ export type Expert = {
   totalConsultations: number;
   experienceYears: number;
   pricePerMin: number;
-  isOnline: boolean;
+  status: 'AVAILABLE' | 'SCHEDULED' | 'IN_SESSION' | 'OFFLINE';
+  nextAvailableTime?: string;
   isVerified: boolean;
   imageUri: string;
 };
@@ -186,7 +187,7 @@ export const EXPERTS: Expert[] = [
     totalConsultations: 1241,
     experienceYears: 15,
     pricePerMin: 45,
-    isOnline: true,
+    status: 'AVAILABLE',
     isVerified: true,
     imageUri: 'https://randomuser.me/api/portraits/men/32.jpg',
   },
@@ -198,7 +199,8 @@ export const EXPERTS: Expert[] = [
     totalConsultations: 553,
     experienceYears: 8,
     pricePerMin: 40,
-    isOnline: true,
+    status: 'SCHEDULED',
+    nextAvailableTime: 'Today, 7:30 PM',
     isVerified: true,
     imageUri: 'https://randomuser.me/api/portraits/women/44.jpg',
   },
@@ -210,7 +212,8 @@ export const EXPERTS: Expert[] = [
     totalConsultations: 312,
     experienceYears: 10,
     pricePerMin: 35,
-    isOnline: false,
+    status: 'IN_SESSION',
+    nextAvailableTime: '15 min',
     isVerified: true,
     imageUri: 'https://randomuser.me/api/portraits/men/68.jpg',
   },
@@ -222,7 +225,7 @@ export const EXPERTS: Expert[] = [
     totalConsultations: 889,
     experienceYears: 12,
     pricePerMin: 50,
-    isOnline: true,
+    status: 'OFFLINE',
     isVerified: true,
     imageUri: 'https://randomuser.me/api/portraits/women/17.jpg',
   },

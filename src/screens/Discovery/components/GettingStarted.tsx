@@ -77,7 +77,18 @@ export function GettingStarted() {
 
 const styles = StyleSheet.create({
   container: {
-    gap: Spacing.lg,
+    backgroundColor: Colors.backgroundWhite,
+    borderRadius: Radius.xl,
+    paddingVertical: Spacing.xl,
+    paddingHorizontal: Spacing.lg,
+    borderWidth: 1,
+    borderColor: Colors.borderSubtle,
+    shadowColor: Colors.textPrimary,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.05,
+    shadowRadius: 24,
+    elevation: 3,
+    gap: Spacing.xl,
   },
   heading: {
     ...Typography.sectionHeading,
