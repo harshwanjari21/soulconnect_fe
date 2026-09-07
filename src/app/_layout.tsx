@@ -11,9 +11,19 @@ import { useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 
 import { BottomNavigation } from '@/components/navigation/BottomNavigation';
+import { ProctorNavigation } from '@/components/navigation/ProctorNavigation';
 import { Colors } from '@/theme';
+import { usePathname } from 'expo-router';
 
 SplashScreen.preventAutoHideAsync();
+
+function DynamicBottomNavigation() {
+  const pathname = usePathname();
+  if (pathname.startsWith('/proctor')) {
+    return <ProctorNavigation />;
+  }
+  return <BottomNavigation />;
+}
 
 export default function RootLayout() {
   useEffect(() => {
@@ -24,7 +34,7 @@ export default function RootLayout() {
   return (
     <View style={styles.root}>
       <Stack screenOptions={{ headerShown: false, animation: 'fade' }} />
-      <BottomNavigation />
+      <DynamicBottomNavigation />
     </View>
   );
 }
