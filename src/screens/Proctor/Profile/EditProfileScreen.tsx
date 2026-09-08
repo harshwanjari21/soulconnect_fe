@@ -46,6 +46,8 @@ export function EditProfileScreen() {
   const [location, setLocation] = useState(MOCK_PROCTOR_PROFILE.location);
   const [languages, setLanguages] = useState<string[]>(MOCK_PROCTOR_PROFILE.languages);
   const [newLanguageInput, setNewLanguageInput] = useState('');
+  const [specialties, setSpecialties] = useState<string[]>(MOCK_PROCTOR_PROFILE.specialties);
+  const [newSpecialtyInput, setNewSpecialtyInput] = useState('');
 
   const handleRemoveLanguage = (langToRemove: string) => {
     setLanguages(languages.filter((l) => l !== langToRemove));
@@ -58,6 +60,19 @@ export function EditProfileScreen() {
       setLanguages([...languages, trimmed]);
     }
     setNewLanguageInput('');
+  };
+
+  const handleRemoveSpecialty = (specToRemove: string) => {
+    setSpecialties(specialties.filter((s) => s !== specToRemove));
+  };
+
+  const handleAddSpecialty = () => {
+    if (!newSpecialtyInput.trim()) return;
+    const trimmed = newSpecialtyInput.trim();
+    if (!specialties.includes(trimmed)) {
+      setSpecialties([...specialties, trimmed]);
+    }
+    setNewSpecialtyInput('');
   };
 
   const handleSave = () => {
@@ -207,6 +222,35 @@ export function EditProfileScreen() {
               />
             </View>
 
+            {/* Specialties */}
+            <View style={styles.fieldGroup}>
+              <Text style={styles.fieldLabel}>SPECIALTIES</Text>
+              <View style={styles.langPillsRow}>
+                {specialties.map((spec) => (
+                  <TouchableOpacity
+                    key={spec}
+                    style={styles.specialtyPill}
+                    onPress={() => handleRemoveSpecialty(spec)}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Remove ${spec}`}
+                  >
+                    <Text style={styles.specialtyPillText}>{spec}</Text>
+                    <Ionicons name="close" size={14} color={Colors.teal} />
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+              <TextInput
+                style={[styles.input, styles.addLangInput]}
+                value={newSpecialtyInput}
+                onChangeText={setNewSpecialtyInput}
+                onSubmitEditing={handleAddSpecialty}
+                returnKeyType="done"
+                placeholder="Add Specialty..."
+                placeholderTextColor={Colors.textSecondary}
+              />
+            </View>
+
             {/* Save Button */}
             <TouchableOpacity
               style={styles.saveButton}
@@ -350,6 +394,21 @@ const styles = StyleSheet.create({
   },
   addLangInput: {
     color: Colors.textPrimary,
+  },
+  specialtyPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: Colors.tealSoft,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: Radius.pill,
+  },
+  specialtyPillText: {
+    ...Typography.caption,
+    fontWeight: '700',
+    color: Colors.teal,
+    fontSize: 12,
   },
   saveButton: {
     backgroundColor: Colors.cosmosPlum,

@@ -48,13 +48,14 @@ export function ProctorProfileScreen() {
         <Text style={styles.headerTitle}>Professional Profile</Text>
         <TouchableOpacity
           style={styles.gearButton}
-          onPress={() => router.push('/proctor/edit-profile' as any)}
+          onPress={() => router.push('/proctor/settings' as any)}
           accessibilityRole="button"
           accessibilityLabel="Settings"
         >
           <Ionicons name="settings-sharp" size={22} color={Colors.cosmosPlum} />
         </TouchableOpacity>
       </View>
+
 
       <ScrollView
         style={styles.scroll}
@@ -129,6 +130,18 @@ export function ProctorProfileScreen() {
           <Text style={styles.aboutBody}>{profile.bio}</Text>
         </View>
 
+        {/* LANGUAGES Section */}
+        <View style={styles.section}>
+          <Text style={styles.sectionHeading}>LANGUAGES</Text>
+          <View style={styles.specialtiesWrap}>
+            {profile.languages.map((lang) => (
+              <View key={lang} style={styles.languagePill}>
+                <Text style={styles.languageText}>{lang}</Text>
+              </View>
+            ))}
+          </View>
+        </View>
+
         {/* SPECIALTIES Section */}
         <View style={styles.section}>
           <Text style={styles.sectionHeading}>SPECIALTIES</Text>
@@ -193,16 +206,6 @@ export function ProctorProfileScreen() {
             </TouchableOpacity>
           </View>
         </View>
-
-        {/* Edit Profile Action Button */}
-        <TouchableOpacity
-          style={styles.editProfileBtn}
-          onPress={() => router.push('/proctor/edit-profile' as any)}
-          accessibilityRole="button"
-          accessibilityLabel="Edit Profile"
-        >
-          <Text style={styles.editProfileBtnText}>Edit Profile</Text>
-        </TouchableOpacity>
 
         {/* Clearance for navigation */}
         <View style={{ height: BOTTOM_NAV_HEIGHT + Spacing.xxl }} />
@@ -354,6 +357,18 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     fontSize: 12,
   },
+  languagePill: {
+    backgroundColor: Colors.tealSoft,
+    borderRadius: Radius.pill,
+    paddingHorizontal: 14,
+    paddingVertical: 7,
+  },
+  languageText: {
+    ...Typography.caption,
+    color: Colors.teal,
+    fontWeight: '600',
+    fontSize: 12,
+  },
   ratesList: {
     gap: Spacing.sm,
   },
@@ -396,19 +411,5 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     fontSize: 14,
   },
-  editProfileBtn: {
-    backgroundColor: Colors.cosmosPlum,
-    borderRadius: Radius.pill,
-    paddingVertical: 15,
-    alignItems: 'center',
-    justifyContent: 'center',
-    ...Shadows.sm,
-    marginTop: Spacing.xs,
-  },
-  editProfileBtnText: {
-    ...Typography.button,
-    color: Colors.backgroundWhite,
-    fontSize: 15,
-    fontWeight: '700',
-  },
 });
+

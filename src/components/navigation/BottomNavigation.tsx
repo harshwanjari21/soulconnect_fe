@@ -6,7 +6,6 @@
  * Active state:
  *   - Filled icon in teal
  *   - Teal label
- *   - Soft teal pill behind the icon (not a hard top-edge dot)
  *
  * Inactive state:
  *   - Outline icon in muted slate
@@ -27,9 +26,7 @@ import { NAV_ITEMS } from '@/data/discovery';
 import {
   BOTTOM_NAV_HEIGHT,
   Colors,
-  Radius,
   Shadows,
-  Spacing,
   Typography,
 } from '@/theme';
 
@@ -64,20 +61,11 @@ export function BottomNavigation() {
               accessibilityLabel={item.label}
               accessibilityState={{ selected: isActive }}
             >
-              {/* Active pill background behind the icon */}
-              <View
-                style={[
-                  styles.iconPill,
-                  isActive && styles.iconPillActive,
-                ]}
-              >
-                <Ionicons
-                  name={iconName}
-                  size={22}
-                  color={isActive ? Colors.navActive : Colors.navInactive}
-                />
-              </View>
-
+              <Ionicons
+                name={iconName}
+                size={22}
+                color={isActive ? Colors.navActive : Colors.navInactive}
+              />
               <Text
                 style={[
                   styles.label,
@@ -117,20 +105,8 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 2,
+    gap: 4,
     height: BOTTOM_NAV_HEIGHT,
-  },
-  /** Container around the icon — becomes a soft pill when active */
-  iconPill: {
-    width: 44,
-    height: 28,
-    borderRadius: Radius.pill,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'transparent',
-  },
-  iconPillActive: {
-    backgroundColor: Colors.tealSoft,
   },
   label: {
     ...Typography.navLabel,
@@ -140,3 +116,4 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.navBackground,
   },
 });
+
