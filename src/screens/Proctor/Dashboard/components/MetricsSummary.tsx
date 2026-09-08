@@ -28,7 +28,6 @@ export function MetricsSummary({ metrics }: MetricsSummaryProps) {
       value: `₹${metrics.todayEarnings.toLocaleString()}`,
       icon: 'wallet-outline' as const,
       color: Colors.accentForest,
-      bgColor: '#EBF7EE',
       route: '/proctor/earnings',
     },
     {
@@ -37,7 +36,6 @@ export function MetricsSummary({ metrics }: MetricsSummaryProps) {
       value: `${metrics.todayMinutes}m`,
       icon: 'time-outline' as const,
       color: Colors.teal,
-      bgColor: Colors.tealSoft,
       route: '/proctor/earnings',
     },
     {
@@ -46,7 +44,6 @@ export function MetricsSummary({ metrics }: MetricsSummaryProps) {
       value: `${metrics.completedSessions} calls`,
       icon: 'checkmark-done-outline' as const,
       color: Colors.accentViolet,
-      bgColor: Colors.lavender,
       route: '/proctor/schedule',
     },
     {
@@ -55,7 +52,6 @@ export function MetricsSummary({ metrics }: MetricsSummaryProps) {
       value: `★ ${metrics.rating}`,
       icon: 'star-outline' as const,
       color: Colors.gold,
-      bgColor: Colors.goldSoft,
       route: '/proctor/reviews',
     },
   ];
@@ -65,75 +61,70 @@ export function MetricsSummary({ metrics }: MetricsSummaryProps) {
   };
 
   return (
-    <View style={styles.grid}>
-      {items.map((item) => (
-        <TouchableOpacity
-          key={item.id}
-          style={styles.card}
-          onPress={() => handlePress(item.route)}
-          activeOpacity={0.7}
-          accessibilityRole="button"
-          accessibilityLabel={`${item.label}: ${item.value}`}
-        >
-          <View style={styles.headerRow}>
-            <View style={[styles.iconBox, { backgroundColor: item.bgColor }]}>
-              <Ionicons name={item.icon} size={18} color={item.color} />
+    <View style={styles.row}>
+      {items.map((item, index) => (
+        <React.Fragment key={item.id}>
+          <TouchableOpacity
+            style={styles.item}
+            onPress={() => handlePress(item.route)}
+            activeOpacity={0.7}
+            accessibilityRole="button"
+            accessibilityLabel={`${item.label}: ${item.value}`}
+          >
+            <Ionicons name={item.icon} size={16} color={item.color} />
+            <View style={styles.textCol}>
+              <Text style={styles.valueText} numberOfLines={1}>
+                {item.value}
+              </Text>
+              <Text style={styles.labelText} numberOfLines={1}>
+                {item.label}
+              </Text>
             </View>
-            <View style={styles.valueRow}>
-              <Text style={styles.valueText}>{item.value}</Text>
-              <Ionicons name="chevron-forward" size={13} color={Colors.textTertiary} />
-            </View>
-          </View>
-          <Text style={styles.labelText}>{item.label}</Text>
-        </TouchableOpacity>
+          </TouchableOpacity>
+          {index < items.length - 1 && <View style={styles.divider} />}
+        </React.Fragment>
       ))}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  grid: {
+  row: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: Spacing.sm,
-  },
-  card: {
-    flex: 1,
-    minWidth: '47%',
+    alignItems: 'center',
     backgroundColor: Colors.backgroundWhite,
     borderRadius: Radius.md,
     borderWidth: 1,
     borderColor: Colors.border,
-    padding: Spacing.md,
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.xs,
     ...Shadows.xs,
   },
-  headerRow: {
+  item: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: Spacing.xs,
+    gap: 6,
+    paddingHorizontal: Spacing.xs,
   },
-  iconBox: {
-    width: 32,
-    height: 32,
-    borderRadius: Radius.pill,
-    alignItems: 'center',
-    justifyContent: 'center',
+  textCol: {
+    flex: 1,
+    gap: 1,
   },
-  valueRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 2,
+  divider: {
+    width: 1,
+    height: 28,
+    backgroundColor: Colors.border,
   },
   valueText: {
     ...Typography.cardTitle,
     color: Colors.textPrimary,
     fontWeight: '700',
-    fontSize: 16,
+    fontSize: 13,
   },
   labelText: {
     ...Typography.caption,
     color: Colors.textSecondary,
-    fontSize: 12,
+    fontSize: 10,
   },
 });

@@ -75,8 +75,8 @@ export function QueueList({
             </View>
 
             {/* Topic & Birth Preview */}
-            <View style={styles.topicBox}>
-              <Text style={styles.topicLabel}>Inquiry:</Text>
+            <View style={styles.topicGroup}>
+              <Text style={styles.topicLabel}>Inquiry</Text>
               <Text style={styles.topicText} numberOfLines={2}>
                 {req.topic}
               </Text>
@@ -198,22 +198,20 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     fontSize: 10,
   },
-  topicBox: {
-    backgroundColor: Colors.backgroundPrimary,
-    padding: Spacing.sm,
-    borderRadius: Radius.sm,
+  topicGroup: {
     gap: 2,
   },
   topicLabel: {
     ...Typography.caption,
-    fontWeight: '700',
-    color: Colors.textSoftPlum,
+    fontWeight: '600',
+    color: Colors.textTertiary,
     fontSize: 11,
   },
   topicText: {
     ...Typography.secondaryBody,
     color: Colors.textPrimary,
-    fontSize: 13,
+    fontWeight: '700',
+    fontSize: 14,
   },
   birthPillsRow: {
     flexDirection: 'row',

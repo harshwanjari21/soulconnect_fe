@@ -3,9 +3,9 @@
  */
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import {
-  ScrollView,
+  Animated,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -41,6 +41,24 @@ export function ProctorDashboardScreen() {
   const [status, setStatus] = useState<ProctorStatus>('AVAILABLE');
   const [queue, setQueue] = useState<ConsultationRequest[]>(MOCK_ACTIVE_QUEUE);
   const [incomingReq, setIncomingReq] = useState<ConsultationRequest | null>(null);
+  const scrollY = useRef(new Animated.Value(0)).current;
+
+  const COLLAPSE_RANGE = 40;
+  const greetingOpacity = scrollY.interpolate({
+    inputRange: [0, COLLAPSE_RANGE],
+    outputRange: [1, 0],
+    extrapolate: 'clamp',
+  });
+  const greetingHeight = scrollY.interpolate({
+    inputRange: [0, COLLAPSE_RANGE],
+    outputRange: [18, 0],
+    extrapolate: 'clamp',
+  });
+  const headerPaddingVertical = scrollY.interpolate({
+    inputRange: [0, COLLAPSE_RANGE],
+    outputRange: [Spacing.md, Spacing.xs],
+    extrapolate: 'clamp',
+  });
 
   const handleAcceptRequest = (request: ConsultationRequest) => {
     setIncomingReq(null);
@@ -78,10 +96,17 @@ export function ProctorDashboardScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
-      {/* Top Bar Header */}
-      <View style={styles.header}>
+      {/* Top Bar Header — collapses to a single line on scroll */}
+      <Animated.View style={[styles.header, { paddingVertical: headerPaddingVertical }]}>
         <View style={styles.headerLeft}>
-          <Text style={styles.greetingText}>Namaste,</Text>
+          <Animated.Text
+            style={[
+              styles.greetingText,
+              { opacity: greetingOpacity, height: greetingHeight },
+            ]}
+          >
+            Namaste,
+          </Animated.Text>
           <View style={styles.nameRow}>
             <Text style={styles.proctorName}>{MOCK_PROCTOR_PROFILE.name}</Text>
             {MOCK_PROCTOR_PROFILE.isVerified && (
@@ -100,31 +125,25 @@ export function ProctorDashboardScreen() {
           <Ionicons name="swap-horizontal" size={16} color={Colors.teal} />
           <Text style={styles.switchModeText}>Seeker App</Text>
         </TouchableOpacity>
-      </View>
+      </Animated.View>
 
-      <ScrollView
+      <Animated.ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+          { useNativeDriver: false },
+        )}
+        scrollEventThrottle={16}
       >
         {/* Availability Controller */}
         <View style={styles.padded}>
           <AvailabilityToggle status={status} onStatusChange={setStatus} />
         </View>
 
-        {/* Daily Stats */}
-        <View style={[styles.padded, { marginTop: Spacing.lg }]}>
-          <View style={styles.sectionHeaderRow}>
-            <Text style={styles.sectionTitle}>Today's Overview</Text>
-            <TouchableOpacity onPress={() => router.push('/proctor/earnings')}>
-              <Text style={styles.seeAllText}>View Wallet ›</Text>
-            </TouchableOpacity>
-          </View>
-          <MetricsSummary metrics={MOCK_DAILY_METRICS} />
-        </View>
-
         {/* Live Consultation Queue */}
-        <View style={[styles.padded, { marginTop: Spacing.xl }]}>
+        <View style={[styles.padded, { marginTop: Spacing.lg }]}>
           <View style={styles.sectionHeaderRow}>
             <View style={styles.queueTitleGroup}>
               <Text style={styles.sectionTitle}>Live Queue</Text>
@@ -134,12 +153,8 @@ export function ProctorDashboardScreen() {
             </View>
 
             {queue.length > 0 && (
-              <TouchableOpacity
-                style={styles.simCallBtn}
-                onPress={simulateIncomingCall}
-              >
-                <Ionicons name="notifications-outline" size={14} color={Colors.gold} />
-                <Text style={styles.simCallText}>Test Incoming Call</Text>
+              <TouchableOpacity onPress={simulateIncomingCall}>
+                <Text style={styles.simCallText}>Test call</Text>
               </TouchableOpacity>
             )}
           </View>
@@ -149,6 +164,17 @@ export function ProctorDashboardScreen() {
             onAcceptRequest={handleAcceptRequest}
             onRejectRequest={handleRejectRequest}
           />
+        </View>
+
+        {/* Daily Stats */}
+        <View style={[styles.padded, { marginTop: Spacing.xl }]}>
+          <View style={styles.sectionHeaderRow}>
+            <Text style={styles.sectionTitle}>Today's Overview</Text>
+            <TouchableOpacity onPress={() => router.push('/proctor/earnings')}>
+              <Text style={styles.seeAllText}>View Wallet ›</Text>
+            </TouchableOpacity>
+          </View>
+          <MetricsSummary metrics={MOCK_DAILY_METRICS} />
         </View>
 
         {/* Recent Completed Consultations */}
@@ -190,7 +216,7 @@ export function ProctorDashboardScreen() {
 
         {/* Bottom nav clearance */}
         <View style={{ height: BOTTOM_NAV_HEIGHT + Spacing.xxl }} />
-      </ScrollView>
+      </Animated.ScrollView>
 
       {/* Modal for incoming call alert */}
       <IncomingRequestModal
@@ -213,17 +239,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: SCREEN_PADDING_H,
-    paddingTop: Spacing.sm,
-    paddingBottom: Spacing.md,
     backgroundColor: Colors.backgroundPrimary,
   },
   headerLeft: {
     gap: 2,
+    justifyContent: 'center',
   },
   greetingText: {
     ...Typography.caption,
     color: Colors.textSecondary,
     fontSize: 13,
+    overflow: 'hidden',
   },
   nameRow: {
     flexDirection: 'row',
@@ -294,20 +320,12 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     fontSize: 11,
   },
-  simCallBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    backgroundColor: Colors.goldSoft,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: Radius.pill,
-  },
   simCallText: {
     ...Typography.caption,
-    color: Colors.textPrimary,
+    color: Colors.textTertiary,
     fontWeight: '600',
     fontSize: 11,
+    textDecorationLine: 'underline',
   },
   historyList: {
     gap: Spacing.sm,
