@@ -28,7 +28,10 @@ import { PracticeGrid } from './components/PracticeGrid';
 import { PromoSection } from './components/PromoSection';
 import { SearchBar } from './components/SearchBar';
 
+import { useRouter } from 'expo-router';
+
 export function DiscoveryScreen() {
+  const router = useRouter();
   const handleNotification = useCallback(() => {}, []);
 
   return (
@@ -64,7 +67,7 @@ export function DiscoveryScreen() {
 
         {/* Expert list — 28px gap, full-bleed (manages own padding) */}
         <View style={{ marginTop: Spacing['3xl'] - Spacing.xs }}>
-          <ExpertList />
+          <ExpertList onExpertPress={(expert) => router.push(`/expert/${expert.id}` as any)} />
         </View>
 
         {/* Promo offer — 28px gap */}

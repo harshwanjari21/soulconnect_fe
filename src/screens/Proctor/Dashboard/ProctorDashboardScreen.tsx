@@ -118,7 +118,7 @@ export function ProctorDashboardScreen() {
         {/* Switch back to Customer mode button */}
         <TouchableOpacity
           style={styles.switchModeBtn}
-          onPress={() => router.push('/')}
+          onPress={() => router.push('/' as any)}
           accessibilityRole="button"
           accessibilityLabel="Switch to Seeker View"
         >
