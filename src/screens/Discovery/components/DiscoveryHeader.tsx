@@ -13,6 +13,7 @@
  *   [search below]
  */
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 
@@ -24,6 +25,7 @@ type DiscoveryHeaderProps = {
 };
 
 export function DiscoveryHeader({ onNotificationPress }: DiscoveryHeaderProps) {
+  const router = useRouter();
   const { width } = useWindowDimensions();
   // Height is auto — padding-driven, not fixed
   // We pass a representative height for the SVG canvas
@@ -49,15 +51,27 @@ export function DiscoveryHeader({ onNotificationPress }: DiscoveryHeaderProps) {
           <Text style={styles.subtitle}>Astrology, guidance & trusted experts.</Text>
         </View>
 
-        <TouchableOpacity
-          style={styles.notificationButton}
-          onPress={onNotificationPress}
-          accessibilityRole="button"
-          accessibilityLabel="Notifications"
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-        >
-          <Ionicons name="notifications-outline" size={20} color={Colors.textPrimary} />
-        </TouchableOpacity>
+        <View style={styles.actionRow}>
+          <TouchableOpacity
+            style={styles.proctorModeBtn}
+            onPress={() => router.push('/proctor' as any)}
+            accessibilityRole="button"
+            accessibilityLabel="Switch to Astrologer Portal"
+          >
+            <Ionicons name="sparkles" size={13} color={Colors.cosmosPlum} />
+            <Text style={styles.proctorModeText}>Astrologer</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.notificationButton}
+            onPress={onNotificationPress}
+            accessibilityRole="button"
+            accessibilityLabel="Notifications"
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
+            <Ionicons name="notifications-outline" size={20} color={Colors.textPrimary} />
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
@@ -96,6 +110,30 @@ const styles = StyleSheet.create({
     ...Typography.heroSubtitle,
     color: Colors.textSecondary,
   },
+  actionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+    marginLeft: Spacing.sm,
+    marginTop: 2,
+  },
+  proctorModeBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: Colors.goldSoft,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: Radius.pill,
+    borderWidth: 1,
+    borderColor: '#F0DEC0',
+  },
+  proctorModeText: {
+    ...Typography.caption,
+    color: Colors.cosmosPlum,
+    fontWeight: '700',
+    fontSize: 11,
+  },
   notificationButton: {
     width: 36,
     height: 36,
@@ -105,7 +143,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderWidth: 1,
     borderColor: Colors.border,
-    marginLeft: Spacing.md,
-    marginTop: 2,
   },
 });
