@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { LinearGradient } from 'expo-linear-gradient';
 import React, { useState } from 'react';
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -8,7 +9,7 @@ import { EXPERTS } from '@/data/discovery';
 import { useUser } from '@/data/user/UserContext';
 import { Colors, Radius, Shadows, Spacing, Typography } from '@/theme';
 
-export function ExpertProfileScreen() {
+export function ExpertScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const { walletBalance, bookSession } = useUser();
@@ -22,7 +23,7 @@ export function ExpertProfileScreen() {
 
   if (!expert) {
     return (
-      <SafeAreaView style={styles.safeArea}>
+      <SafeAreaView style={styles.container}>
         <View style={styles.errorHeader}>
           <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
             <Ionicons name="arrow-back" size={24} color={Colors.textPrimary} />
@@ -84,11 +85,8 @@ export function ExpertProfileScreen() {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent} bounces={false}>
-        {/* Hero Image */}
-        <View style={styles.heroContainer}>
-          <Image source={typeof expert.imageUri === 'string' ? { uri: expert.imageUri } : expert.imageUri} style={styles.heroImage} />
-          <View style={styles.heroOverlay} />
-          
+        {/* Header Background */}
+        <View style={styles.headerBackground}>
           <SafeAreaView edges={['top']} style={styles.heroNav}>
             <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
               <Ionicons name="arrow-back" size={24} color={Colors.textPrimary} />
@@ -96,35 +94,46 @@ export function ExpertProfileScreen() {
           </SafeAreaView>
         </View>
 
-        {/* Content */}
+        {/* Content Body */}
         <View style={styles.body}>
+          {/* Floating Profile Image */}
+          <View style={styles.profileImageContainer}>
+            <Image source={typeof expert.imageUri === 'string' ? { uri: expert.imageUri } : expert.imageUri} style={styles.profileImage} />
+            {expert.isVerified && (
+              <View style={styles.verifiedBadge}>
+                <Ionicons name="checkmark-circle" size={16} color={Colors.backgroundWhite} />
+              </View>
+            )}
+          </View>
+
           <View style={styles.titleRow}>
             <Text style={styles.name}>{expert.name}</Text>
-            {expert.isVerified && <Ionicons name="checkmark-circle" size={20} color={Colors.gold} />}
           </View>
-          <Text style={styles.specialty}>{expert.specialty} • {expert.experienceYears} yrs exp</Text>
+          <Text style={styles.specialty}>{expert.specialty}</Text>
+          <Text style={styles.experience}>{expert.experienceYears} Years Experience</Text>
 
           <View style={styles.statsRow}>
             <View style={styles.statBox}>
-              <Ionicons name="star" size={16} color={Colors.gold} />
-              <Text style={styles.statValue}>{expert.rating}</Text>
+              <Ionicons name="star" size={20} color={Colors.gold} />
+              <View style={styles.statTextGroup}>
+                <Text style={styles.statValue}>{expert.rating}</Text>
+                <Text style={styles.statLabel}>Rating</Text>
+              </View>
             </View>
             <View style={styles.statDivider} />
             <View style={styles.statBox}>
-              <Ionicons name="people" size={16} color={Colors.teal} />
-              <Text style={styles.statValue}>{expert.totalConsultations}+</Text>
-            </View>
-            <View style={styles.statDivider} />
-            <View style={styles.statBox}>
-              <Text style={styles.statLabel}>Rate</Text>
-              <Text style={styles.statValue}>₹{expert.pricePerMin}/min</Text>
+              <Ionicons name="people" size={20} color={Colors.teal} />
+              <View style={styles.statTextGroup}>
+                <Text style={styles.statValue}>{expert.totalConsultations}+</Text>
+                <Text style={styles.statLabel}>Consults</Text>
+              </View>
             </View>
           </View>
 
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>About</Text>
+            <Text style={styles.sectionTitle}>About {expert.name.split(' ')[0]}</Text>
             <Text style={styles.bioText}>
-              {expert.name} is a highly respected practitioner specializing in {expert.specialty}. With over {expert.experienceYears} years of experience guiding individuals toward clarity and peace.
+              {expert.name} is a highly respected practitioner specializing in {expert.specialty}. With over {expert.experienceYears} years of experience, they have guided thousands of individuals toward clarity and peace. Let their expertise illuminate your path.
             </Text>
           </View>
         </View>
@@ -260,37 +269,21 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.backgroundPrimary,
   },
-  safeArea: {
-    flex: 1,
-    backgroundColor: Colors.backgroundPrimary,
-  },
   errorHeader: {
     paddingHorizontal: Spacing.lg,
     paddingTop: Spacing.md,
   },
   scrollContent: {
-    paddingBottom: 160, // Space for bottom bar
+    paddingBottom: 120, // Less gap for bottom bar
   },
-  heroContainer: {
+  headerBackground: {
     width: '100%',
-    height: 350,
-    position: 'relative',
-  },
-  heroImage: {
-    width: '100%',
-    height: '100%',
-    resizeMode: 'cover',
-  },
-  heroOverlay: {
-    position: 'absolute',
-    top: 0, left: 0, right: 0, bottom: 0,
-    backgroundColor: 'rgba(252, 248, 241, 0.2)', // Light warm overlay
+    height: 180,
+    backgroundColor: Colors.cosmosPlum,
+    borderBottomLeftRadius: 40,
+    borderBottomRightRadius: 40,
   },
   heroNav: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
     paddingHorizontal: Spacing.lg,
     paddingTop: Spacing.sm,
   },
@@ -298,68 +291,100 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: Colors.backgroundWhite,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: Colors.textPrimary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 4,
   },
   body: {
-    padding: Spacing.xl,
-    backgroundColor: Colors.backgroundPrimary,
-    marginTop: -30,
-    borderTopLeftRadius: Radius.xl,
-    borderTopRightRadius: Radius.xl,
+    paddingHorizontal: Spacing.xl,
+    marginTop: -60,
+    alignItems: 'center',
+  },
+  profileImageContainer: {
+    position: 'relative',
+    marginBottom: Spacing.md,
+  },
+  profileImage: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    borderWidth: 4,
+    borderColor: Colors.backgroundPrimary,
+  },
+  verifiedBadge: {
+    position: 'absolute',
+    bottom: 4,
+    right: 4,
+    backgroundColor: Colors.gold,
+    borderRadius: 12,
+    padding: 2,
+    borderWidth: 2,
+    borderColor: Colors.backgroundPrimary,
   },
   titleRow: {
-    flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.xs,
+    marginBottom: 4,
   },
   name: {
     ...Typography.pageTitle,
     color: Colors.textPrimary,
+    fontSize: 24,
+    textAlign: 'center',
   },
   specialty: {
-    ...Typography.body,
+    ...Typography.cardTitle,
+    color: Colors.teal,
+    fontSize: 16,
+    textAlign: 'center',
+  },
+  experience: {
+    ...Typography.caption,
     color: Colors.textSecondary,
     marginTop: 4,
+    textAlign: 'center',
   },
   statsRow: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: Colors.backgroundWhite,
-    padding: Spacing.md,
-    borderRadius: Radius.lg,
-    marginTop: Spacing.lg,
-    borderWidth: 1,
-    borderColor: Colors.borderSubtle,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.xl,
+    borderRadius: Radius.xl,
+    marginTop: Spacing.xl,
+    width: '100%',
+    justifyContent: 'space-around',
+    ...Shadows.sm,
   },
   statBox: {
-    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    gap: 6,
+    gap: Spacing.sm,
+  },
+  statTextGroup: {
+    alignItems: 'flex-start',
   },
   statDivider: {
     width: 1,
-    height: 24,
+    height: 30,
     backgroundColor: Colors.border,
   },
   statLabel: {
     ...Typography.caption,
     color: Colors.textSecondary,
+    fontSize: 11,
   },
   statValue: {
     ...Typography.label,
     color: Colors.textPrimary,
+    fontSize: 14,
   },
   section: {
-    marginTop: Spacing.xxl,
+    marginTop: Spacing.xl,
+    width: '100%',
+    backgroundColor: Colors.backgroundWhite,
+    padding: Spacing.lg,
+    borderRadius: Radius.xl,
+    ...Shadows.xs,
   },
   sectionTitle: {
     ...Typography.sectionHeading,
@@ -376,20 +401,16 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: Colors.backgroundWhite,
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: Spacing.xl,
-    paddingTop: Spacing.md,
+    paddingTop: Spacing.lg,
     paddingBottom: 40,
-    borderTopWidth: 1,
-    borderColor: Colors.borderSubtle,
-    shadowColor: Colors.textPrimary,
-    shadowOffset: { width: 0, height: -8 },
-    shadowOpacity: 0.05,
-    shadowRadius: 24,
-    elevation: 10,
+    borderTopLeftRadius: Radius.xl,
+    borderTopRightRadius: Radius.xl,
+    ...Shadows.lg,
   },
   statusCol: {
     gap: 2,

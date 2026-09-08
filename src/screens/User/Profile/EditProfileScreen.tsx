@@ -1,7 +1,9 @@
 import { Ionicons } from '@expo/vector-icons';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BOTTOM_NAV_HEIGHT, Colors, Radius, SCREEN_PADDING_H, Shadows, Spacing, Typography } from '@/theme';
@@ -11,9 +13,10 @@ export function EditProfileScreen() {
   const [name, setName] = useState('Aisha Desai');
   const [email, setEmail] = useState('aisha.desai@example.com');
   const [phone, setPhone] = useState('+91 98765 43210');
-  const [dob, setDob] = useState('1995-10-24');
-  const [tob, setTob] = useState('08:30 AM');
+  const [dob, setDob] = useState(new Date(1995, 9, 24)); // Oct 24, 1995
+  const [tob, setTob] = useState(new Date(1995, 9, 24, 8, 30)); // 08:30 AM
   const [pob, setPob] = useState('Mumbai, Maharashtra');
+  const [avatarUri, setAvatarUri] = useState<string | null>(null);
 
   const [showPickerModal, setShowPickerModal] = useState<'DATE' | 'TIME' | null>(null);
   const [showMediaSelector, setShowMediaSelector] = useState(false);
@@ -22,43 +25,44 @@ export function EditProfileScreen() {
     router.back();
   };
 
-  const renderMockPicker = () => {
+  const handleDateChange = (event: any, selectedDate?: Date) => {
+    setShowPickerModal(null);
+    if (selectedDate) {
+      if (showPickerModal === 'DATE') setDob(selectedDate);
+      if (showPickerModal === 'TIME') setTob(selectedDate);
+    }
+  };
+
+  const renderDateTimePicker = () => {
     if (!showPickerModal) return null;
-
-    const isDate = showPickerModal === 'DATE';
-
     return (
-      <View style={styles.modalOverlay}>
-        <View style={styles.modalCard}>
-          <Text style={styles.modalTitle}>Select {isDate ? 'Date of Birth' : 'Time of Birth'}</Text>
-          
-          {/* Mock Picker UI (Wheel style illusion) */}
-          <View style={styles.pickerWheel}>
-            <View style={styles.pickerRowFaded}>
-              <Text style={styles.pickerTextFaded}>{isDate ? '23' : '07'} {isDate ? 'Sept' : ''}</Text>
-              <Text style={styles.pickerTextFaded}>{isDate ? '1994' : '15 AM'}</Text>
-            </View>
-            <View style={styles.pickerRowActive}>
-              <Text style={styles.pickerTextActive}>{isDate ? '24' : '08'} {isDate ? 'Oct' : ''}</Text>
-              <Text style={styles.pickerTextActive}>{isDate ? '1995' : '30 AM'}</Text>
-            </View>
-            <View style={styles.pickerRowFaded}>
-              <Text style={styles.pickerTextFaded}>{isDate ? '25' : '09'} {isDate ? 'Nov' : ''}</Text>
-              <Text style={styles.pickerTextFaded}>{isDate ? '1996' : '45 AM'}</Text>
-            </View>
-          </View>
-
-          <View style={styles.modalActions}>
-            <TouchableOpacity style={styles.modalCancelBtn} onPress={() => setShowPickerModal(null)}>
-              <Text style={styles.modalCancelText}>Cancel</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.modalConfirmBtn} onPress={() => setShowPickerModal(null)}>
-              <Text style={styles.modalConfirmText}>Confirm</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </View>
+      <DateTimePicker
+        value={showPickerModal === 'DATE' ? dob : tob}
+        mode={showPickerModal === 'DATE' ? 'date' : 'time'}
+        display="default"
+        onChange={handleDateChange}
+      />
     );
+  };
+
+  const takePhoto = async () => {
+    setShowMediaSelector(false);
+    const result = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.5,
+    });
+    if (!result.canceled) setAvatarUri(result.assets[0].uri);
+  };
+
+  const pickImage = async () => {
+    setShowMediaSelector(false);
+    const result = await ImagePicker.launchImageLibraryAsync({
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.5,
+    });
+    if (!result.canceled) setAvatarUri(result.assets[0].uri);
   };
 
   const renderMediaSelector = () => {
@@ -67,15 +71,15 @@ export function EditProfileScreen() {
       <View style={styles.modalOverlay}>
         <View style={styles.modalCard}>
           <Text style={styles.modalTitle}>Change Profile Photo</Text>
-          <TouchableOpacity style={styles.mediaOptionBtn} onPress={() => setShowMediaSelector(false)}>
+          <TouchableOpacity style={styles.mediaOptionBtn} onPress={takePhoto}>
             <Ionicons name="camera-outline" size={20} color={Colors.textPrimary} />
             <Text style={styles.mediaOptionText}>Take Photo</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.mediaOptionBtn} onPress={() => setShowMediaSelector(false)}>
+          <TouchableOpacity style={styles.mediaOptionBtn} onPress={pickImage}>
             <Ionicons name="image-outline" size={20} color={Colors.textPrimary} />
             <Text style={styles.mediaOptionText}>Choose from Library</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.mediaOptionBtn, styles.mediaOptionDestructive]} onPress={() => setShowMediaSelector(false)}>
+          <TouchableOpacity style={[styles.mediaOptionBtn, styles.mediaOptionDestructive]} onPress={() => { setAvatarUri(null); setShowMediaSelector(false); }}>
             <Ionicons name="trash-outline" size={20} color={'#E53E3E'} />
             <Text style={[styles.mediaOptionText, { color: '#E53E3E' }]}>Remove Photo</Text>
           </TouchableOpacity>
@@ -107,7 +111,11 @@ export function EditProfileScreen() {
           {/* Avatar Edit */}
           <View style={styles.avatarSection}>
             <TouchableOpacity style={styles.avatarPlaceholder} onPress={() => setShowMediaSelector(true)}>
-              <Text style={styles.avatarText}>AD</Text>
+              {avatarUri ? (
+                <Image source={{ uri: avatarUri }} style={{ width: 80, height: 80, borderRadius: 40 }} />
+              ) : (
+                <Text style={styles.avatarText}>AD</Text>
+              )}
               <View style={styles.editBadge}>
                 <Ionicons name="camera" size={14} color={Colors.backgroundWhite} />
               </View>
@@ -154,7 +162,7 @@ export function EditProfileScreen() {
             <View style={[styles.inputGroup, { flex: 1 }]}>
               <Text style={styles.label}>Date of Birth</Text>
               <TouchableOpacity style={styles.pickerInput} onPress={() => setShowPickerModal('DATE')}>
-                <Text style={styles.pickerInputValue}>{dob}</Text>
+                <Text style={styles.pickerInputValue}>{dob.toISOString().split('T')[0]}</Text>
                 <Ionicons name="calendar-outline" size={20} color={Colors.textTertiary} />
               </TouchableOpacity>
             </View>
@@ -162,7 +170,7 @@ export function EditProfileScreen() {
             <View style={[styles.inputGroup, { flex: 1 }]}>
               <Text style={styles.label}>Time of Birth</Text>
               <TouchableOpacity style={styles.pickerInput} onPress={() => setShowPickerModal('TIME')}>
-                <Text style={styles.pickerInputValue}>{tob}</Text>
+                <Text style={styles.pickerInputValue}>{tob.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
                 <Ionicons name="time-outline" size={20} color={Colors.textTertiary} />
               </TouchableOpacity>
             </View>
@@ -183,7 +191,7 @@ export function EditProfileScreen() {
         </ScrollView>
       </KeyboardAvoidingView>
 
-      {renderMockPicker()}
+      {renderDateTimePicker()}
       {renderMediaSelector()}
     </SafeAreaView>
   );
@@ -315,7 +323,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: Radius.xl,
     borderTopRightRadius: Radius.xl,
     padding: Spacing.xl,
-    paddingBottom: 40,
+    paddingBottom: Platform.OS === 'ios' ? 40 : Spacing.xl,
     ...Shadows.md,
   },
   modalTitle: {
@@ -367,7 +375,7 @@ const styles = StyleSheet.create({
   },
   modalCancelText: {
     ...Typography.button,
-    color: Colors.textSecondary,
+    color: Colors.textPrimary,
   },
   modalConfirmBtn: {
     flex: 1,

@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -8,6 +9,7 @@ import { useUser } from '@/data/user/UserContext';
 import { BOTTOM_NAV_HEIGHT, Colors, Radius, SCREEN_PADDING_H, Shadows, Spacing, Typography } from '@/theme';
 
 export function WalletScreen() {
+  const router = useRouter();
   const { walletBalance, transactionHistory, addFunds } = useUser();
   const [selectedQuickAdd, setSelectedQuickAdd] = useState<number>(1000);
 
@@ -38,7 +40,11 @@ export function WalletScreen() {
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       {/* Top Header */}
       <View style={styles.header}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
+          <Ionicons name="arrow-back" size={24} color={Colors.textPrimary} />
+        </TouchableOpacity>
         <Text style={styles.pageTitle}>Wallet</Text>
+        <View style={{ width: 24 }} /> {/* Spacer */}
       </View>
 
       <ScrollView
@@ -173,9 +179,16 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.backgroundPrimary,
   },
   header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: SCREEN_PADDING_H,
     paddingTop: Spacing.sm,
     paddingBottom: Spacing.md,
+  },
+  backBtn: {
+    padding: Spacing.xs,
+    marginLeft: -Spacing.xs,
   },
   pageTitle: {
     ...Typography.pageTitle,

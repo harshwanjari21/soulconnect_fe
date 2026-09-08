@@ -64,7 +64,7 @@ export function SessionsScreen() {
             renderEmptyState('UPCOMING')
           ) : (
             upcomingSessions.map((session) => (
-              <View key={session.id} style={styles.sessionCard}>
+              <View key={session.id} style={[styles.sessionCard, { borderLeftColor: Colors.teal }]}>
                 <View style={styles.cardHeader}>
                   <View style={styles.statusBadge}>
                     <View style={styles.statusDot} />
@@ -77,7 +77,7 @@ export function SessionsScreen() {
                   <Image source={typeof session.expertImageUri === 'string' ? { uri: session.expertImageUri } : session.expertImageUri} style={styles.avatar} />
                   <View style={styles.info}>
                     <Text style={styles.expertName}>{session.expertName}</Text>
-                    <Text style={styles.details}>{session.durationMinutes} mins • ₹{session.cost}</Text>
+                    <Text style={styles.details}>₹{session.cost}/min • Video Call</Text>
                   </View>
                 </View>
 
@@ -98,7 +98,7 @@ export function SessionsScreen() {
             renderEmptyState('PAST')
           ) : (
             pastSessions.map((session) => (
-              <View key={session.id} style={styles.sessionCard}>
+              <View key={session.id} style={[styles.sessionCard, { borderLeftColor: Colors.textTertiary }]}>
                 <View style={styles.cardHeader}>
                   <View style={[styles.statusBadge, styles.statusBadgePast]}>
                     <Ionicons name="checkmark-circle" size={12} color={Colors.textSecondary} />
@@ -111,7 +111,7 @@ export function SessionsScreen() {
                   <Image source={typeof session.expertImageUri === 'string' ? { uri: session.expertImageUri } : session.expertImageUri} style={styles.avatar} />
                   <View style={styles.info}>
                     <Text style={styles.expertName}>{session.expertName}</Text>
-                    <Text style={styles.details}>{session.durationMinutes} mins • ₹{session.cost}</Text>
+                    <Text style={styles.details}>₹{session.cost}/min • Video Call</Text>
                   </View>
                 </View>
 
@@ -183,10 +183,11 @@ const styles = StyleSheet.create({
   sessionCard: {
     backgroundColor: Colors.backgroundWhite,
     borderRadius: Radius.lg,
-    padding: Spacing.md,
+    padding: Spacing.lg,
     borderWidth: 1,
-    borderColor: Colors.border,
-    ...Shadows.xs,
+    borderLeftWidth: 6,
+    borderColor: Colors.borderSubtle,
+    ...Shadows.sm,
   },
   cardHeader: {
     flexDirection: 'row',
@@ -240,20 +241,22 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   expertName: {
-    ...Typography.cardTitle,
+    ...Typography.sectionHeading,
     color: Colors.textPrimary,
-    fontSize: 16,
+    fontSize: 18,
   },
   details: {
-    ...Typography.caption,
+    ...Typography.body,
     color: Colors.textSecondary,
+    fontWeight: '500',
   },
   cardFooter: {
     flexDirection: 'row',
-    gap: Spacing.sm,
+    gap: Spacing.md,
     borderTopWidth: 1,
     borderColor: Colors.borderSubtle,
-    paddingTop: Spacing.md,
+    paddingTop: Spacing.lg,
+    marginTop: Spacing.xs,
   },
   actionBtnPrimary: {
     flex: 1,
