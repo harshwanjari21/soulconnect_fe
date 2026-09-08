@@ -1,5 +1,5 @@
-import { ExpertProfileScreen } from '@/screens/User/ExpertDetails/ExpertProfileScreen';
+import { ExpertScreen } from '@/screens/User/ExpertView/ExpertScreen';
 
 export default function ExpertRoute() {
-  return <ExpertProfileScreen />;
+  return <ExpertScreen />;
 }

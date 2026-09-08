@@ -116,12 +116,13 @@ export function ProfileScreen() {
         {/* Zodiac Badge */}
         <View style={styles.zodiacCard}>
           <View style={styles.zodiacLeft}>
-            <Ionicons name="moon" size={24} color={Colors.cosmosPlum} />
+            <Ionicons name="moon" size={28} color={Colors.backgroundWhite} />
             <View>
               <Text style={styles.zodiacTitle}>Scorpio</Text>
               <Text style={styles.zodiacSubtitle}>Water Sign • Intense & Intuitive</Text>
             </View>
           </View>
+          <Ionicons name="sparkles" size={20} color={Colors.gold} style={{ opacity: 0.8 }} />
         </View>
 
         {/* Astrological Data */}
@@ -233,7 +234,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: Colors.backgroundWhite,
+    backgroundColor: Colors.tealSoft,
     padding: Spacing.lg,
     borderRadius: Radius.xl,
     ...Shadows.sm,
@@ -247,7 +248,7 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: Colors.tealSoft,
+    backgroundColor: Colors.backgroundWhite,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -271,19 +272,17 @@ const styles = StyleSheet.create({
   },
   editBtn: {
     padding: Spacing.sm,
-    backgroundColor: Colors.backgroundCream,
+    backgroundColor: Colors.backgroundWhite,
     borderRadius: Radius.pill,
   },
   zodiacCard: {
-    backgroundColor: Colors.backgroundWhite,
-    padding: Spacing.md,
-    borderRadius: Radius.lg,
+    backgroundColor: Colors.cosmosPlum,
+    padding: Spacing.lg,
+    borderRadius: Radius.xl,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    borderWidth: 1,
-    borderColor: Colors.border,
-    ...Shadows.xs,
+    ...Shadows.md,
   },
   zodiacLeft: {
     flexDirection: 'row',
@@ -291,13 +290,13 @@ const styles = StyleSheet.create({
     gap: Spacing.md,
   },
   zodiacTitle: {
-    ...Typography.cardTitle,
-    color: Colors.cosmosPlum,
-    fontSize: 16,
+    ...Typography.sectionHeading,
+    color: Colors.backgroundWhite,
+    fontSize: 18,
   },
   zodiacSubtitle: {
     ...Typography.caption,
-    color: Colors.textSecondary,
+    color: Colors.goldSoft,
     marginTop: 2,
   },
   astroDataCard: {
