@@ -32,19 +32,19 @@ export function ProctorNavigation() {
   const router = useRouter();
   const pathname = usePathname();
 
-  // Hide nav on the full-screen consultation room
-  if (pathname.includes('/proctor/consultation')) {
+  const matchedItem = PROCTOR_NAV_ITEMS.find((item) =>
+    item.route === '/proctor'
+      ? pathname === '/proctor' || pathname === '/proctor/'
+      : pathname === item.route,
+  );
+
+  // Only show the tab bar on the four main pages — hide it on every sub-page
+  // (settings, edit-profile, reviews, consultation-modes, consultation room, etc.)
+  if (!matchedItem) {
     return null;
   }
 
-  const activeId =
-    pathname.startsWith('/proctor/settings')
-      ? 'profile'
-      : (PROCTOR_NAV_ITEMS.find((item) =>
-          item.route === '/proctor'
-            ? pathname === '/proctor' || pathname === '/proctor/'
-            : pathname === item.route,
-        )?.id ?? 'dashboard');
+  const activeId = matchedItem.id;
 
   const handlePress = (route: string) => {
     router.push(route as any);
