@@ -38,11 +38,13 @@ export function ProctorNavigation() {
   }
 
   const activeId =
-    PROCTOR_NAV_ITEMS.find((item) =>
-      item.route === '/proctor'
-        ? pathname === '/proctor' || pathname === '/proctor/'
-        : pathname === item.route,
-    )?.id ?? 'dashboard';
+    pathname.startsWith('/proctor/settings')
+      ? 'profile'
+      : (PROCTOR_NAV_ITEMS.find((item) =>
+          item.route === '/proctor'
+            ? pathname === '/proctor' || pathname === '/proctor/'
+            : pathname === item.route,
+        )?.id ?? 'dashboard');
 
   const handlePress = (route: string) => {
     router.push(route as any);
