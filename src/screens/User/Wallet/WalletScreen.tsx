@@ -1,81 +1,14 @@
-/**
- * WalletScreen — Seeker/User Wallet & Transaction Ledger
- *
- * Matches Image 4:
- *   - Dark plum balance card with celestial crescent
- *   - Quick Add Money buttons (+₹500, +₹1,000, +₹2,000)
- *   - Transactions history with Consultation Debits & Wallet Credits
- */
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
-import {
-  Alert,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Circle, Path } from 'react-native-svg';
 
-import {
-  BOTTOM_NAV_HEIGHT,
-  Colors,
-  Radius,
-  SCREEN_PADDING_H,
-  Shadows,
-  Spacing,
-  Typography,
-} from '@/theme';
+import { useUser } from '@/data/user/UserContext';
+import { BOTTOM_NAV_HEIGHT, Colors, Radius, SCREEN_PADDING_H, Shadows, Spacing, Typography } from '@/theme';
 
-type TransactionItem = {
-  id: string;
-  type: 'debit' | 'credit';
-  title: string;
-  subtitle: string;
-  date: string;
-  amount: number;
-  status: 'SUCCESS' | 'PENDING' | 'FAILED';
-  iconName: 'call' | 'add' | 'chatbubble';
-};
-
-const INITIAL_TRANSACTIONS: TransactionItem[] = [
-  {
-    id: 'tx-1',
-    type: 'debit',
-    title: 'Consultation debit',
-    subtitle: 'Dr. Amara Singh',
-    date: 'Today • 10:24 AM',
-    amount: 450,
-    status: 'SUCCESS',
-    iconName: 'call',
-  },
-  {
-    id: 'tx-2',
-    type: 'credit',
-    title: 'Wallet credit',
-    subtitle: 'UPI Payment',
-    date: 'Oct 22, 2025 • 06:15 PM',
-    amount: 1000,
-    status: 'SUCCESS',
-    iconName: 'add',
-  },
-  {
-    id: 'tx-3',
-    type: 'debit',
-    title: 'Consultation debit',
-    subtitle: 'Sania Mirza',
-    date: 'Oct 20, 2025',
-    amount: 300,
-    status: 'SUCCESS',
-    iconName: 'chatbubble',
-  },
-];
-
-export default function WalletScreen() {
-  const [balance, setBalance] = useState(1240);
-  const [transactions, setTransactions] = useState<TransactionItem[]>(INITIAL_TRANSACTIONS);
+export function WalletScreen() {
+  const { walletBalance, transactionHistory, addFunds } = useUser();
   const [selectedQuickAdd, setSelectedQuickAdd] = useState<number>(1000);
 
   const quickAmounts = [500, 1000, 2000];
@@ -93,19 +26,8 @@ export default function WalletScreen() {
         {
           text: 'Proceed to Pay',
           onPress: () => {
-            const newTx: TransactionItem = {
-              id: `tx-${Date.now()}`,
-              type: 'credit',
-              title: 'Wallet credit',
-              subtitle: 'UPI Instant Top-up',
-              date: 'Just now',
-              amount: selectedQuickAdd,
-              status: 'SUCCESS',
-              iconName: 'add',
-            };
-            setBalance((prev) => prev + selectedQuickAdd);
-            setTransactions((prev) => [newTx, ...prev]);
-            Alert.alert('Success', `₹${selectedQuickAdd} added to your wallet!`);
+            addFunds(selectedQuickAdd);
+            Alert.alert('Success', `₹${selectedQuickAdd.toLocaleString()} added to your wallet!`);
           },
         },
       ],
@@ -139,7 +61,7 @@ export default function WalletScreen() {
 
           <View style={styles.balanceCardContent}>
             <Text style={styles.balanceCardLabel}>TOTAL BALANCE</Text>
-            <Text style={styles.balanceAmount}>₹{balance.toLocaleString()}.00</Text>
+            <Text style={styles.balanceAmount}>₹{walletBalance.toLocaleString()}.00</Text>
 
             <TouchableOpacity
               style={styles.addFundsLink}
@@ -197,15 +119,17 @@ export default function WalletScreen() {
           </View>
 
           <View style={styles.transactionsList}>
-            {transactions.map((tx) => {
-              const isDebit = tx.type === 'debit';
+            {transactionHistory.map((tx) => {
+              const isDebit = tx.type === 'DEBIT';
+              const title = isDebit ? 'Consultation debit' : 'Wallet credit';
+              const iconName = isDebit ? 'call' : 'add';
 
               return (
                 <View key={tx.id} style={styles.txRow}>
                   {/* Left Icon */}
                   <View style={styles.txIconBox}>
                     <Ionicons
-                      name={tx.iconName}
+                      name={iconName}
                       size={18}
                       color={Colors.cosmosPlum}
                     />
@@ -213,8 +137,8 @@ export default function WalletScreen() {
 
                   {/* Middle Details */}
                   <View style={styles.txMiddle}>
-                    <Text style={styles.txTitle}>{tx.title}</Text>
-                    <Text style={styles.txSubtitle}>{tx.subtitle}</Text>
+                    <Text style={styles.txTitle}>{title}</Text>
+                    <Text style={styles.txSubtitle}>{tx.description}</Text>
                     <Text style={styles.txDate}>{tx.date}</Text>
                   </View>
 

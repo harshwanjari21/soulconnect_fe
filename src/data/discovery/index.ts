@@ -258,11 +258,11 @@ export const NAV_ITEMS: NavItem[] = [
     route: '/sessions',
   },
   {
-    id: 'wallet',
-    label: 'Wallet',
-    iconActive: 'wallet',
-    iconInactive: 'wallet-outline',
-    route: '/wallet',
+    id: 'experts',
+    label: 'Experts',
+    iconActive: 'people',
+    iconInactive: 'people-outline',
+    route: '/experts',
   },
   {
     id: 'profile',

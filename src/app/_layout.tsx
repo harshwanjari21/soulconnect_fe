@@ -22,8 +22,18 @@ function DynamicBottomNavigation() {
   if (pathname.startsWith('/proctor')) {
     return <ProctorNavigation />;
   }
-  return <BottomNavigation />;
+
+  // Only show the user bottom nav on the 4 root tab pages
+  const MAIN_TABS = ['/', '/sessions', '/experts', '/profile'];
+  if (MAIN_TABS.includes(pathname)) {
+    return <BottomNavigation />;
+  }
+
+  // Hide on sub-pages like /wallet, /edit-profile, /expert/[id], /consultation/[id]
+  return null;
 }
+
+import { UserProvider } from '@/data/user/UserContext';
 
 export default function RootLayout() {
   useEffect(() => {
@@ -32,10 +42,12 @@ export default function RootLayout() {
   }, []);
 
   return (
-    <View style={styles.root}>
-      <Stack screenOptions={{ headerShown: false, animation: 'fade' }} />
-      <DynamicBottomNavigation />
-    </View>
+    <UserProvider>
+      <View style={styles.root}>
+        <Stack screenOptions={{ headerShown: false, animation: 'fade' }} />
+        <DynamicBottomNavigation />
+      </View>
+    </UserProvider>
   );
 }
 
