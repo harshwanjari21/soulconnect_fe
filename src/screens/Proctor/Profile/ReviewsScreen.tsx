@@ -9,7 +9,6 @@
  */
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
-import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
   ScrollView,
@@ -21,6 +20,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { ScreenHeader } from '@/components/common/ScreenHeader';
 import { AstrologerReview, MOCK_REVIEWS } from '@/data/proctor';
 import {
   BOTTOM_NAV_HEIGHT,
@@ -33,7 +33,6 @@ import {
 } from '@/theme';
 
 export function ReviewsScreen() {
-  const router = useRouter();
   const [selectedFilter, setSelectedFilter] = useState<string>('All');
   const [reviews, setReviews] = useState<AstrologerReview[]>(MOCK_REVIEWS);
   const [replyingReviewId, setReplyingReviewId] = useState<string | null>(null);
@@ -98,19 +97,7 @@ export function ReviewsScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backBtn}
-          onPress={() => router.back()}
-          accessibilityRole="button"
-          accessibilityLabel="Back"
-        >
-          <Ionicons name="arrow-back" size={22} color={Colors.textPrimary} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Reviews</Text>
-        <View style={{ width: 32 }} />
-      </View>
+      <ScreenHeader title="Reviews" />
 
       <ScrollView
         style={styles.scroll}
@@ -269,25 +256,6 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: Colors.backgroundPrimary,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: SCREEN_PADDING_H,
-    paddingVertical: Spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.borderSubtle,
-  },
-  backBtn: {
-    width: 32,
-    height: 32,
-    justifyContent: 'center',
-  },
-  headerTitle: {
-    ...Typography.pageTitle,
-    color: Colors.textPrimary,
-    fontSize: 22,
   },
   scroll: {
     flex: 1,

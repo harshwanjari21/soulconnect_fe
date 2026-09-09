@@ -203,6 +203,17 @@ export const MOCK_SCHEDULED_APPOINTMENTS: ScheduledAppointment[] = [
     status: 'CONFIRMED',
     notes: 'Floor plan sent via WhatsApp / attachment.',
   },
+  {
+    id: 'app-203',
+    clientName: 'Sneha Iyer',
+    clientAvatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80',
+    serviceType: 'Career & Numerology Reading',
+    date: 'Today',
+    time: '07:00 PM',
+    durationMinutes: 30,
+    status: 'PENDING',
+    notes: 'First-time client, requested a callback confirmation.',
+  },
 ];
 
 export type ProctorNavItem = {

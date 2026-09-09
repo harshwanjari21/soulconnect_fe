@@ -7,7 +7,6 @@
  *   - Persist rate updates across the entire application
  */
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
   Alert,
@@ -22,6 +21,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { ScreenHeader } from '@/components/common/ScreenHeader';
 import { MOCK_PROCTOR_PROFILE } from '@/data/proctor';
 import {
   BOTTOM_NAV_HEIGHT,
@@ -44,8 +44,6 @@ type ModeItem = {
 const PRESET_RATES = [15, 20, 25, 30, 40, 50, 65, 75, 100];
 
 export function ConsultationModesScreen() {
-  const router = useRouter();
-
   const [videoEnabled, setVideoEnabled] = useState(MOCK_PROCTOR_PROFILE.videoEnabled);
   const [audioEnabled, setAudioEnabled] = useState(MOCK_PROCTOR_PROFILE.audioEnabled);
   const [chatEnabled, setChatEnabled] = useState(MOCK_PROCTOR_PROFILE.chatEnabled);
@@ -125,19 +123,7 @@ export function ConsultationModesScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
-      {/* Top Header */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backBtn}
-          onPress={() => router.back()}
-          accessibilityRole="button"
-          accessibilityLabel="Back"
-        >
-          <Ionicons name="arrow-back" size={22} color={Colors.textPrimary} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Consultation</Text>
-        <View style={{ width: 32 }} />
-      </View>
+      <ScreenHeader title="Consultation" />
 
       <ScrollView
         style={styles.scroll}
@@ -182,9 +168,9 @@ export function ConsultationModesScreen() {
                 <Switch
                   value={mode.enabled}
                   onValueChange={(val) => handleToggle(mode.id, val)}
-                  trackColor={{ false: '#E2E8F0', true: Colors.cosmosPlum }}
+                  trackColor={{ false: Colors.neutralGray, true: Colors.cosmosPlum }}
                   thumbColor={Colors.backgroundWhite}
-                  ios_backgroundColor="#E2E8F0"
+                  ios_backgroundColor={Colors.neutralGray}
                 />
               </View>
             </View>
@@ -295,25 +281,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.backgroundPrimary,
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: SCREEN_PADDING_H,
-    paddingVertical: Spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.borderSubtle,
-  },
-  backBtn: {
-    width: 32,
-    height: 32,
-    justifyContent: 'center',
-  },
-  headerTitle: {
-    ...Typography.pageTitle,
-    color: Colors.textPrimary,
-    fontSize: 22,
-  },
   scroll: {
     flex: 1,
   },
@@ -374,7 +341,7 @@ const styles = StyleSheet.create({
     paddingVertical: 3,
     borderRadius: Radius.pill,
     borderWidth: 1,
-    borderColor: '#EFE6D6',
+    borderColor: Colors.borderCream,
   },
   rateText: {
     ...Typography.caption,

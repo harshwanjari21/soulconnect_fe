@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { ScreenHeader } from '@/components/common/ScreenHeader';
 import {
   MOCK_COMPLETED_SESSIONS,
   MOCK_PROCTOR_PROFILE,
@@ -50,16 +51,11 @@ export function ProctorEarningsScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.pageTitle}>Earnings & Wallet</Text>
-        <TouchableOpacity
-          style={styles.backBtn}
-          onPress={() => router.push('/proctor' as any)}
-        >
-          <Ionicons name="arrow-back" size={20} color={Colors.textPrimary} />
-        </TouchableOpacity>
-      </View>
+      <ScreenHeader
+        title="Earnings & Wallet"
+        backPosition="right"
+        onBackPress={() => router.push('/proctor' as any)}
+      />
 
       <ScrollView
         style={styles.scroll}
@@ -128,7 +124,7 @@ export function ProctorEarningsScreen() {
               onPress={() => router.push('/proctor/consultation-modes' as any)}
               activeOpacity={0.7}
             >
-              <View style={[styles.rateIconWrap, { backgroundColor: '#EAF5FF' }]}>
+              <View style={[styles.rateIconWrap, { backgroundColor: Colors.skySoft }]}>
                 <Ionicons name="videocam-outline" size={18} color={Colors.accentOcean} />
               </View>
               <Text style={styles.rateLabel}>Video Call</Text>
@@ -194,27 +190,6 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: Colors.backgroundPrimary,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: SCREEN_PADDING_H,
-    paddingVertical: Spacing.md,
-  },
-  pageTitle: {
-    ...Typography.pageTitle,
-    color: Colors.textPrimary,
-  },
-  backBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: Radius.pill,
-    backgroundColor: Colors.backgroundWhite,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: Colors.border,
   },
   scroll: {
     flex: 1,

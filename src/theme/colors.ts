@@ -88,6 +88,42 @@ export const Colors = {
   navActive: '#168C83',
   navInactive: '#A0A8B2',
   navBackground: '#FFFFFF',
+
+  // ── Extended Semantic Tokens (Proctor cleanup) ──────────────────────
+  /** Soft coral background — cancelled badges, destructive-lite chips */
+  coralSoft: '#FDECEA',
+  /** Border for coralSoft surfaces */
+  coralBorder: '#F5C6C2',
+  /** Destructive / recording-live red */
+  danger: '#E53E3E',
+  /** Soft danger background — badges */
+  dangerSoft: '#FFE8E8',
+  /** Soft danger background — cards */
+  dangerSoftAlt: '#FFF0F0',
+  /** Border for dangerSoftAlt cards */
+  dangerBorder: '#FFD4D4',
+  /** Info / notice banner background */
+  infoBg: '#E8F7F5',
+  /** Info / notice banner border */
+  infoBorder: '#C6EBE4',
+  /** Verified / success checkmark */
+  success: '#22C55E',
+  /** Neutral switch-off track (cool gray, distinct from warm border) */
+  neutralGray: '#E2E8F0',
+  /** Warm cream border variant */
+  borderCream: '#EFE6D6',
+  /** Soft teal border accent */
+  tealBorder: '#BFE4DC',
+  /** Soft pink chip background */
+  pinkSoft: '#F7EDEC',
+  /** Muted label text, distinct shade from textTertiary */
+  textMuted: '#8A92A0',
+  /** Soft blue border accent */
+  borderBlueSoft: '#D4E2F0',
+  /** Soft sky background variant — icon wraps */
+  skySoft: '#EAF5FF',
+  /** Kundli chart cell background */
+  chartBackground: '#FFFDF8',
 } as const;
 
 export type ColorToken = keyof typeof Colors;

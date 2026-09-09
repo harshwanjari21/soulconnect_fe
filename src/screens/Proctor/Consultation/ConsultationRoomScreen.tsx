@@ -345,7 +345,7 @@ const styles = StyleSheet.create({
     width: 54,
     height: 54,
     borderRadius: Radius.pill,
-    backgroundColor: '#E53E3E',
+    backgroundColor: Colors.danger,
     alignItems: 'center',
     justifyContent: 'center',
     ...Shadows.md,

@@ -9,10 +9,12 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
+  useWindowDimensions,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { CelestialBackground } from '@/components/common/CelestialBackground';
 import {
   ConsultationRequest,
   MOCK_ACTIVE_QUEUE,
@@ -38,6 +40,7 @@ import { QueueList } from './components/QueueList';
 
 export function ProctorDashboardScreen() {
   const router = useRouter();
+  const { width } = useWindowDimensions();
   const [status, setStatus] = useState<ProctorStatus>('AVAILABLE');
   const [queue, setQueue] = useState<ConsultationRequest[]>(MOCK_ACTIVE_QUEUE);
   const [incomingReq, setIncomingReq] = useState<ConsultationRequest | null>(null);
@@ -98,6 +101,17 @@ export function ProctorDashboardScreen() {
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       {/* Top Bar Header — collapses to a single line on scroll */}
       <Animated.View style={[styles.header, { paddingVertical: headerPaddingVertical }]}>
+        {/* Orbital geometry — same celestial motif as the Seeker Discovery header */}
+        <View style={styles.celestialCanvas} pointerEvents="none">
+          <CelestialBackground
+            width={width}
+            height={70}
+            color={Colors.gold}
+            opacity={0.30}
+            variant="header"
+          />
+        </View>
+
         <View style={styles.headerLeft}>
           <Animated.Text
             style={[
@@ -240,6 +254,14 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: SCREEN_PADDING_H,
     backgroundColor: Colors.backgroundPrimary,
+    overflow: 'hidden',
+  },
+  celestialCanvas: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 70,
   },
   headerLeft: {
     gap: 2,
@@ -270,7 +292,7 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     borderRadius: Radius.pill,
     borderWidth: 1,
-    borderColor: '#BFE4DC',
+    borderColor: Colors.tealBorder,
   },
   switchModeText: {
     ...Typography.caption,

@@ -25,6 +25,8 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { PrimaryButton } from '@/components/common/PrimaryButton';
+import { ScreenHeader } from '@/components/common/ScreenHeader';
 import { MOCK_PROCTOR_PROFILE } from '@/data/proctor';
 import {
   BOTTOM_NAV_HEIGHT,
@@ -86,19 +88,7 @@ export function EditProfileScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
-      {/* Top Bar */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backBtn}
-          onPress={() => router.back()}
-          accessibilityRole="button"
-          accessibilityLabel="Back"
-        >
-          <Ionicons name="arrow-back" size={22} color={Colors.textPrimary} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Edit Profile</Text>
-        <View style={{ width: 32 }} />
-      </View>
+      <ScreenHeader title="Edit Profile" />
 
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -252,14 +242,7 @@ export function EditProfileScreen() {
             </View>
 
             {/* Save Button */}
-            <TouchableOpacity
-              style={styles.saveButton}
-              onPress={handleSave}
-              accessibilityRole="button"
-              accessibilityLabel="Save Changes"
-            >
-              <Text style={styles.saveButtonText}>Save Changes</Text>
-            </TouchableOpacity>
+            <PrimaryButton label="Save Changes" onPress={handleSave} />
           </View>
 
           {/* Clearance for navigation */}
@@ -274,25 +257,6 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: Colors.backgroundPrimary,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: SCREEN_PADDING_H,
-    paddingVertical: Spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.borderSubtle,
-  },
-  backBtn: {
-    width: 32,
-    height: 32,
-    justifyContent: 'center',
-  },
-  headerTitle: {
-    ...Typography.pageTitle,
-    color: Colors.textPrimary,
-    fontSize: 22,
   },
   scroll: {
     flex: 1,
@@ -381,7 +345,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: '#F7EDEC',
+    backgroundColor: Colors.pinkSoft,
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: Radius.pill,
@@ -409,20 +373,5 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: Colors.teal,
     fontSize: 12,
-  },
-  saveButton: {
-    backgroundColor: Colors.cosmosPlum,
-    borderRadius: Radius.pill,
-    paddingVertical: 15,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: Spacing.md,
-    ...Shadows.sm,
-  },
-  saveButtonText: {
-    ...Typography.button,
-    color: Colors.backgroundWhite,
-    fontSize: 15,
-    fontWeight: '700',
   },
 });
