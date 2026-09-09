@@ -3,17 +3,18 @@
  *
  * Sections (matching reference design):
  *   Account Setup  — Profile Info, Schedule, Expertise, Bank, Reviews
- *   Settings       — Preferences, Notifications
+ *   Settings       — Push Notifications, Email Notifications
  *   Legal & Support — Privacy, Terms, Help
  *   Log Out button (prominent coral, bottom)
  */
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Alert,
   ScrollView,
   StyleSheet,
+  Switch,
   Text,
   TouchableOpacity,
   View,
@@ -39,7 +40,11 @@ interface SettingsItem {
   icon: IconName;
   iconBg: string;
   iconColor: string;
-  onPress: () => void;
+  onPress?: () => void;
+  toggle?: {
+    value: boolean;
+    onValueChange: (value: boolean) => void;
+  };
 }
 
 interface SettingsSection {
@@ -49,6 +54,8 @@ interface SettingsSection {
 
 export function SettingsScreen() {
   const router = useRouter();
+  const [pushEnabled, setPushEnabled] = useState(true);
+  const [emailEnabled, setEmailEnabled] = useState(true);
 
   const handleLogout = () => {
     Alert.alert('Log Out', 'Are you sure you want to log out from SoulConnect?', [
@@ -116,22 +123,22 @@ export function SettingsScreen() {
       title: 'Settings',
       items: [
         {
-          id: 'preferences',
-          label: 'Settings',
-          subtitle: 'Manage notifications and preferences',
-          icon: 'settings-outline',
-          iconBg: '#EEE7F5',
-          iconColor: Colors.accentViolet,
-          onPress: () => Alert.alert('Settings', 'Coming soon.'),
-        },
-        {
-          id: 'notifications',
-          label: 'Notifications',
-          subtitle: 'View account and consultation alerts',
+          id: 'push-notifications',
+          label: 'Push Notifications',
+          subtitle: 'Get instant alerts for new requests',
           icon: 'notifications-outline',
           iconBg: '#FDECEA',
           iconColor: Colors.accentCoral,
-          onPress: () => Alert.alert('Notifications', 'Coming soon.'),
+          toggle: { value: pushEnabled, onValueChange: setPushEnabled },
+        },
+        {
+          id: 'email-notifications',
+          label: 'Email Notifications',
+          subtitle: 'Receive updates and summaries via email',
+          icon: 'mail-outline',
+          iconBg: Colors.tealSoft,
+          iconColor: Colors.teal,
+          toggle: { value: emailEnabled, onValueChange: setEmailEnabled },
         },
       ],
     },
@@ -197,15 +204,9 @@ export function SettingsScreen() {
           <View key={section.title} style={styles.section}>
             <Text style={styles.sectionTitle}>{section.title}</Text>
             <View style={styles.card}>
-              {section.items.map((item, index) => (
-                <React.Fragment key={item.id}>
-                  <TouchableOpacity
-                    style={styles.row}
-                    onPress={item.onPress}
-                    activeOpacity={0.7}
-                    accessibilityRole="button"
-                    accessibilityLabel={item.label}
-                  >
+              {section.items.map((item, index) => {
+                const rowContent = (
+                  <>
                     <View style={[styles.iconCircle, { backgroundColor: item.iconBg }]}>
                       <Ionicons name={item.icon} size={20} color={item.iconColor} />
                     </View>
@@ -213,13 +214,41 @@ export function SettingsScreen() {
                       <Text style={styles.rowLabel}>{item.label}</Text>
                       <Text style={styles.rowSubtitle}>{item.subtitle}</Text>
                     </View>
-                    <Ionicons name="chevron-forward" size={16} color={Colors.textTertiary} />
-                  </TouchableOpacity>
-                  {index < section.items.length - 1 && (
-                    <View style={styles.divider} />
-                  )}
-                </React.Fragment>
-              ))}
+                    {item.toggle ? (
+                      <Switch
+                        value={item.toggle.value}
+                        onValueChange={item.toggle.onValueChange}
+                        trackColor={{ false: Colors.border, true: Colors.teal }}
+                        thumbColor={Colors.backgroundWhite}
+                        accessibilityLabel={item.label}
+                      />
+                    ) : (
+                      <Ionicons name="chevron-forward" size={16} color={Colors.textTertiary} />
+                    )}
+                  </>
+                );
+
+                return (
+                  <React.Fragment key={item.id}>
+                    {item.toggle ? (
+                      <View style={styles.row}>{rowContent}</View>
+                    ) : (
+                      <TouchableOpacity
+                        style={styles.row}
+                        onPress={item.onPress}
+                        activeOpacity={0.7}
+                        accessibilityRole="button"
+                        accessibilityLabel={item.label}
+                      >
+                        {rowContent}
+                      </TouchableOpacity>
+                    )}
+                    {index < section.items.length - 1 && (
+                      <View style={styles.divider} />
+                    )}
+                  </React.Fragment>
+                );
+              })}
             </View>
           </View>
         ))}
