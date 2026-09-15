@@ -64,7 +64,7 @@ export function DiscoveryHeader({ onNotificationPress }: DiscoveryHeaderProps) {
 
           <TouchableOpacity
             style={styles.notificationButton}
-            onPress={onNotificationPress}
+            onPress={() => router.push('/notifications' as any)}
             accessibilityRole="button"
             accessibilityLabel="Notifications"
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}

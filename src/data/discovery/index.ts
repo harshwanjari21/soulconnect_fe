@@ -168,28 +168,55 @@ export type Expert = {
   id: string;
   name: string;
   specialty: string;
+  specialtiesList?: string[];
+  languages?: string[];
   rating: number;
   totalConsultations: number;
   experienceYears: number;
   pricePerMin: number;
+  rates?: { video: number; audio: number; chat: number };
   status: 'AVAILABLE' | 'SCHEDULED' | 'IN_SESSION' | 'OFFLINE';
   nextAvailableTime?: string;
   isVerified: boolean;
   imageUri: string;
+  about?: string;
+  reviews?: {
+    total: number;
+    ratingDistribution: { star: number; count: number }[];
+    recent: { id: string; user: string; rating: number; text: string; date: string }[];
+  };
 };
 
 export const EXPERTS: Expert[] = [
   {
     id: 'expert-1',
-    name: 'Dr. Aman Singh',
+    name: 'Dr. Amara Singh',
     specialty: 'Vedic Astrology',
+    specialtiesList: ['Vedic Astrology', 'Career Guidance', 'Relationship Guidance', 'Kundli Matching'],
+    languages: ['English', 'Hindi'],
     rating: 4.9,
-    totalConsultations: 1241,
+    totalConsultations: 850,
     experienceYears: 15,
-    pricePerMin: 45,
+    pricePerMin: 25,
+    rates: { video: 25, audio: 20, chat: 15 },
     status: 'AVAILABLE',
     isVerified: true,
-    imageUri: 'https://randomuser.me/api/portraits/men/32.jpg',
+    imageUri: 'https://randomuser.me/api/portraits/women/32.jpg',
+    about: 'Dr. Amara Singh is a world-renowned Vedic Astrologer with over 15 years of experience in natal chart analysis, career guidance, and relationship matching. She specializes in helping individuals find clarity in relationships and personal growth.',
+    reviews: {
+      total: 2400,
+      ratingDistribution: [
+        { star: 5, count: 2100 },
+        { star: 4, count: 200 },
+        { star: 3, count: 50 },
+        { star: 2, count: 30 },
+        { star: 1, count: 20 },
+      ],
+      recent: [
+        { id: 'r1', user: 'Neha V.', rating: 5, text: 'Amazing reading! Dr. Amara was so accurate about my career transition.', date: '2 days ago' },
+        { id: 'r2', user: 'Rahul S.', rating: 5, text: 'Very calm and composed. Gave me practical remedies that actually worked.', date: '1 week ago' },
+      ]
+    }
   },
   {
     id: 'expert-2',

@@ -3,13 +3,15 @@ import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
 
-import { useUser } from '@/data/user/UserContext';
+import { useUser, Session } from '@/data/user/UserContext';
 import { BOTTOM_NAV_HEIGHT, Colors, Radius, SCREEN_PADDING_H, Shadows, Spacing, Typography } from '@/theme';
 
 export function SessionsScreen() {
   const [activeTab, setActiveTab] = useState<'UPCOMING' | 'PAST'>('UPCOMING');
-  const { upcomingSessions, pastSessions } = useUser();
+  const [sessionToCancel, setSessionToCancel] = useState<Session | null>(null);
+  const { upcomingSessions, pastSessions, cancelSession } = useUser();
   const router = useRouter();
 
   const renderEmptyState = (type: 'UPCOMING' | 'PAST') => (
@@ -30,28 +32,41 @@ export function SessionsScreen() {
   );
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top']}>
-      <View style={styles.header}>
-        <Text style={styles.pageTitle}>Sessions</Text>
-      </View>
+    <View style={styles.root}>
+      <SafeAreaView edges={['top']} style={{ backgroundColor: Colors.backgroundPrimary }} />
+      <View style={styles.headerContainer}>
+        <View style={styles.headerContent}>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.pageTitle}>Your Sessions</Text>
+            <Text style={styles.pageSubtitle}>Manage your spiritual journey</Text>
+          </View>
+          <TouchableOpacity
+            style={styles.notificationButton}
+            onPress={() => router.push('/notifications' as any)}
+          >
+            <Ionicons name="notifications-outline" size={20} color={Colors.textPrimary} />
+          </TouchableOpacity>
+        </View>
 
-      <View style={styles.tabContainer}>
-        <TouchableOpacity
-          style={[styles.tab, activeTab === 'UPCOMING' && styles.tabActive]}
-          onPress={() => setActiveTab('UPCOMING')}
-        >
-          <Text style={[styles.tabText, activeTab === 'UPCOMING' && styles.tabTextActive]}>
-            Upcoming
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.tab, activeTab === 'PAST' && styles.tabActive]}
-          onPress={() => setActiveTab('PAST')}
-        >
-          <Text style={[styles.tabText, activeTab === 'PAST' && styles.tabTextActive]}>
-            Past
-          </Text>
-        </TouchableOpacity>
+        {/* Thematic Light Pill Tabs */}
+        <View style={styles.tabContainer}>
+          <TouchableOpacity
+            style={[styles.tab, activeTab === 'UPCOMING' && styles.tabActive]}
+            onPress={() => setActiveTab('UPCOMING')}
+          >
+            <Text style={[styles.tabText, activeTab === 'UPCOMING' && styles.tabTextActive]}>
+              Upcoming
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.tab, activeTab === 'PAST' && styles.tabActive]}
+            onPress={() => setActiveTab('PAST')}
+          >
+            <Text style={[styles.tabText, activeTab === 'PAST' && styles.tabTextActive]}>
+              Past History
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       <ScrollView
@@ -64,31 +79,52 @@ export function SessionsScreen() {
             renderEmptyState('UPCOMING')
           ) : (
             upcomingSessions.map((session) => (
-              <View key={session.id} style={[styles.sessionCard, { borderLeftColor: Colors.teal }]}>
-                <View style={styles.cardHeader}>
-                  <View style={styles.statusBadge}>
-                    <View style={styles.statusDot} />
-                    <Text style={styles.statusText}>Upcoming</Text>
+              <View key={session.id} style={styles.upcomingCard}>
+                <View style={styles.ticketTop}>
+                  <View style={styles.statusBadgeUpcoming}>
+                    <View style={styles.statusDotUpcoming} />
+                    <Text style={styles.statusTextUpcoming}>Upcoming</Text>
                   </View>
-                  <Text style={styles.dateText}>{session.date}</Text>
+                  <Text style={styles.dateTextUpcoming}>{session.date}</Text>
                 </View>
 
                 <View style={styles.cardBody}>
-                  <Image source={typeof session.expertImageUri === 'string' ? { uri: session.expertImageUri } : session.expertImageUri} style={styles.avatar} />
+                  <Image source={typeof session.expertImageUri === 'string' ? { uri: session.expertImageUri } : session.expertImageUri} style={styles.avatarUpcoming} />
                   <View style={styles.info}>
-                    <Text style={styles.expertName}>{session.expertName}</Text>
-                    <Text style={styles.details}>₹{session.cost}/min • Video Call</Text>
+                    <Text style={styles.expertNameUpcoming}>{session.expertName}</Text>
+                    <Text style={styles.detailsUpcoming}>₹{session.cost}/min • Video Call</Text>
                   </View>
                 </View>
 
+                <View style={styles.ticketDivider} />
+
                 <View style={styles.cardFooter}>
-                  <TouchableOpacity
-                    style={styles.actionBtnPrimary}
-                    onPress={() => router.push(`/consultation/${session.expertId}` as any)}
-                  >
-                    <Ionicons name="call" size={16} color={Colors.backgroundWhite} />
-                    <Text style={styles.actionBtnTextPrimary}>Join Call</Text>
-                  </TouchableOpacity>
+                  {session.expertJoined ? (
+                    <TouchableOpacity
+                      style={styles.actionBtnPrimary}
+                      onPress={() => router.push(`/consultation/${session.expertId}` as any)}
+                    >
+                      <Ionicons name="call" size={16} color={Colors.backgroundWhite} />
+                      <Text style={styles.actionBtnTextPrimary}>Join Call</Text>
+                    </TouchableOpacity>
+                  ) : (
+                    <>
+                      <TouchableOpacity
+                        style={styles.actionBtnSecondary}
+                        onPress={() => {}}
+                      >
+                        <Ionicons name="calendar-outline" size={16} color={Colors.teal} />
+                        <Text style={styles.actionBtnTextSecondary}>Reschedule</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={[styles.actionBtnSecondary, { borderColor: Colors.accentCoral }]}
+                        onPress={() => setSessionToCancel(session)}
+                      >
+                        <Ionicons name="close-circle-outline" size={16} color={Colors.accentCoral} />
+                        <Text style={[styles.actionBtnTextSecondary, { color: Colors.accentCoral }]}>Cancel</Text>
+                      </TouchableOpacity>
+                    </>
+                  )}
                 </View>
               </View>
             ))
@@ -98,22 +134,24 @@ export function SessionsScreen() {
             renderEmptyState('PAST')
           ) : (
             pastSessions.map((session) => (
-              <View key={session.id} style={[styles.sessionCard, { borderLeftColor: Colors.textTertiary }]}>
-                <View style={styles.cardHeader}>
-                  <View style={[styles.statusBadge, styles.statusBadgePast]}>
+              <View key={session.id} style={styles.pastCard}>
+                <View style={styles.ticketTop}>
+                  <View style={styles.statusBadgePast}>
                     <Ionicons name="checkmark-circle" size={12} color={Colors.textSecondary} />
-                    <Text style={[styles.statusText, { color: Colors.textSecondary }]}>Completed</Text>
+                    <Text style={styles.statusTextPast}>Completed</Text>
                   </View>
-                  <Text style={styles.dateText}>{session.date}</Text>
+                  <Text style={styles.dateTextPast}>{session.date}</Text>
                 </View>
 
                 <View style={styles.cardBody}>
-                  <Image source={typeof session.expertImageUri === 'string' ? { uri: session.expertImageUri } : session.expertImageUri} style={styles.avatar} />
+                  <Image source={typeof session.expertImageUri === 'string' ? { uri: session.expertImageUri } : session.expertImageUri} style={styles.avatarPast} />
                   <View style={styles.info}>
-                    <Text style={styles.expertName}>{session.expertName}</Text>
-                    <Text style={styles.details}>₹{session.cost}/min • Video Call</Text>
+                    <Text style={styles.expertNamePast}>{session.expertName}</Text>
+                    <Text style={styles.detailsPast}>₹{session.cost}/min • Video Call</Text>
                   </View>
                 </View>
+
+                <View style={styles.ticketDividerPast} />
 
                 <View style={styles.cardFooter}>
                   <TouchableOpacity
@@ -130,133 +168,241 @@ export function SessionsScreen() {
         )}
         <View style={{ height: BOTTOM_NAV_HEIGHT + Spacing.xxl }} />
       </ScrollView>
-    </SafeAreaView>
+
+      {/* Cancel Confirmation Modal */}
+      {sessionToCancel && (
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalCard}>
+            <Text style={styles.modalTitle}>Cancel Session</Text>
+            <Text style={styles.modalText}>
+              Canceling this session with {sessionToCancel.expertName} will charge a cancellation fee equivalent to 1 minute of consultation (₹{sessionToCancel.cost / sessionToCancel.durationMinutes}). The remaining balance will be refunded to your wallet.
+              {'\n\n'}Do you wish to proceed?
+            </Text>
+            <View style={styles.modalActions}>
+              <TouchableOpacity style={styles.modalCancel} onPress={() => setSessionToCancel(null)}>
+                <Text style={styles.modalCancelText}>Keep Session</Text>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={styles.modalConfirm} 
+                onPress={() => {
+                  cancelSession(sessionToCancel.id);
+                  setSessionToCancel(null);
+                }}
+              >
+                <Text style={styles.modalConfirmText}>Confirm Cancel</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      )}
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
+  root: {
     flex: 1,
     backgroundColor: Colors.backgroundPrimary,
   },
-  header: {
+  headerContainer: {
+    backgroundColor: Colors.backgroundPrimary,
+    paddingBottom: Spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.borderSubtle,
+  },
+  headerContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: SCREEN_PADDING_H,
     paddingTop: Spacing.sm,
-    paddingBottom: Spacing.md,
+    paddingBottom: Spacing.sm,
+  },
+  notificationButton: {
+    width: 36,
+    height: 36,
+    borderRadius: Radius.pill,
+    backgroundColor: Colors.backgroundWhite,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: Colors.borderSubtle,
   },
   pageTitle: {
     ...Typography.pageTitle,
-    color: Colors.textPrimary,
-    fontSize: 26,
+    color: Colors.cosmosPlum,
+    fontSize: 28,
+  },
+  pageSubtitle: {
+    ...Typography.body,
+    color: Colors.textSecondary,
+    marginTop: 4,
   },
   tabContainer: {
     flexDirection: 'row',
     paddingHorizontal: SCREEN_PADDING_H,
-    marginBottom: Spacing.md,
+    marginTop: Spacing.sm,
     gap: Spacing.sm,
   },
   tab: {
     flex: 1,
-    paddingVertical: Spacing.sm,
+    paddingVertical: 12,
     alignItems: 'center',
-    borderBottomWidth: 2,
-    borderColor: 'transparent',
+    borderRadius: Radius.pill,
+    backgroundColor: Colors.backgroundWhite,
+    borderWidth: 1,
+    borderColor: Colors.borderSubtle,
   },
   tabActive: {
+    backgroundColor: Colors.tealSoft,
     borderColor: Colors.teal,
   },
   tabText: {
     ...Typography.button,
     color: Colors.textSecondary,
+    fontSize: 14,
   },
   tabTextActive: {
     color: Colors.teal,
+    fontWeight: '800',
   },
   scroll: {
     flex: 1,
   },
   scrollContent: {
     paddingHorizontal: SCREEN_PADDING_H,
-    paddingTop: Spacing.xs,
-    gap: Spacing.md,
+    paddingTop: Spacing.xl,
+    gap: Spacing.xl,
   },
-  sessionCard: {
+  
+  // Upcoming Ticket Styling
+  upcomingCard: {
     backgroundColor: Colors.backgroundWhite,
-    borderRadius: Radius.lg,
+    borderRadius: Radius.xl,
     padding: Spacing.lg,
     borderWidth: 1,
-    borderLeftWidth: 6,
-    borderColor: Colors.borderSubtle,
+    borderColor: Colors.tealSoft,
     ...Shadows.sm,
   },
-  cardHeader: {
+  ticketTop: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: Spacing.md,
   },
-  statusBadge: {
+  statusBadgeUpcoming: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    gap: 6,
     backgroundColor: Colors.goldSoft,
-    paddingHorizontal: 8,
+    paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: Radius.pill,
   },
-  statusBadgePast: {
-    backgroundColor: Colors.backgroundCream,
-  },
-  statusDot: {
+  statusDotUpcoming: {
     width: 6,
     height: 6,
     borderRadius: 3,
     backgroundColor: Colors.gold,
   },
-  statusText: {
+  statusTextUpcoming: {
     ...Typography.caption,
     color: Colors.textPrimary,
-    fontWeight: '700',
-    fontSize: 10,
+    fontWeight: '800',
+    fontSize: 11,
+    letterSpacing: 0.5,
   },
-  dateText: {
+  dateTextUpcoming: {
+    ...Typography.caption,
+    color: Colors.textSecondary,
+    fontWeight: '600',
+  },
+  avatarUpcoming: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    borderWidth: 2,
+    borderColor: Colors.tealSoft,
+  },
+  expertNameUpcoming: {
+    ...Typography.sectionHeading,
+    color: Colors.cosmosPlum,
+    fontSize: 19,
+  },
+  detailsUpcoming: {
+    ...Typography.body,
+    color: Colors.textSecondary,
+    fontSize: 13,
+  },
+  ticketDivider: {
+    height: 1,
+    backgroundColor: Colors.borderSubtle,
+    marginVertical: Spacing.md,
+  },
+
+  // Past Ticket Styling
+  pastCard: {
+    backgroundColor: Colors.backgroundWhite,
+    borderRadius: Radius.xl,
+    padding: Spacing.lg,
+    borderWidth: 1,
+    borderColor: Colors.borderSubtle,
+    ...Shadows.sm,
+  },
+  statusBadgePast: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: Colors.backgroundCream,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: Radius.pill,
+  },
+  statusTextPast: {
+    ...Typography.caption,
+    color: Colors.textSecondary,
+    fontWeight: '700',
+    fontSize: 11,
+  },
+  dateTextPast: {
     ...Typography.caption,
     color: Colors.textTertiary,
   },
+  avatarPast: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    borderWidth: 1,
+    borderColor: Colors.borderSubtle,
+  },
+  expertNamePast: {
+    ...Typography.sectionHeading,
+    color: Colors.textPrimary,
+    fontSize: 19,
+  },
+  detailsPast: {
+    ...Typography.body,
+    color: Colors.textSecondary,
+    fontSize: 13,
+  },
+  ticketDividerPast: {
+    height: 1,
+    backgroundColor: Colors.borderSubtle,
+    marginVertical: Spacing.md,
+  },
+
   cardBody: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.md,
-    marginBottom: Spacing.md,
-  },
-  avatar: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    borderWidth: 1,
-    borderColor: Colors.borderSubtle,
   },
   info: {
     flex: 1,
     gap: 2,
   },
-  expertName: {
-    ...Typography.sectionHeading,
-    color: Colors.textPrimary,
-    fontSize: 18,
-  },
-  details: {
-    ...Typography.body,
-    color: Colors.textSecondary,
-    fontWeight: '500',
-  },
   cardFooter: {
     flexDirection: 'row',
     gap: Spacing.md,
-    borderTopWidth: 1,
-    borderColor: Colors.borderSubtle,
-    paddingTop: Spacing.lg,
-    marginTop: Spacing.xs,
   },
   actionBtnPrimary: {
     flex: 1,
@@ -318,4 +464,32 @@ const styles = StyleSheet.create({
     ...Typography.button,
     color: Colors.backgroundWhite,
   },
+  modalOverlay: {
+    position: 'absolute',
+    top: 0, left: 0, right: 0, bottom: 0,
+    backgroundColor: 'rgba(63, 41, 64, 0.4)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 1000,
+    padding: Spacing.xl,
+  },
+  modalCard: {
+    width: '100%',
+    backgroundColor: Colors.backgroundWhite,
+    borderRadius: Radius.xl,
+    padding: Spacing.xl,
+    ...Shadows.lg,
+  },
+  modalTitle: { ...Typography.sectionHeading, color: Colors.textPrimary, marginBottom: Spacing.sm },
+  modalText: { ...Typography.body, color: Colors.textSecondary, marginBottom: Spacing.xl },
+  modalActions: { flexDirection: 'row', justifyContent: 'flex-end', gap: Spacing.md },
+  modalCancel: { paddingVertical: Spacing.sm, paddingHorizontal: Spacing.md },
+  modalCancelText: { ...Typography.button, color: Colors.textSecondary },
+  modalConfirm: {
+    backgroundColor: Colors.accentCoral,
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.lg,
+    borderRadius: Radius.pill,
+  },
+  modalConfirmText: { ...Typography.button, color: Colors.backgroundWhite },
 });

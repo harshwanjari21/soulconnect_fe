@@ -90,6 +90,12 @@ export function ProfileScreen() {
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       <View style={styles.header}>
         <Text style={styles.pageTitle}>Profile</Text>
+        <TouchableOpacity
+          style={styles.notificationButton}
+          onPress={() => router.push('/notifications' as any)}
+        >
+          <Ionicons name="notifications-outline" size={20} color={Colors.textPrimary} />
+        </TouchableOpacity>
       </View>
 
       <ScrollView
@@ -213,9 +219,22 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.backgroundPrimary,
   },
   header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: SCREEN_PADDING_H,
     paddingTop: Spacing.sm,
     paddingBottom: Spacing.md,
+  },
+  notificationButton: {
+    width: 36,
+    height: 36,
+    borderRadius: Radius.pill,
+    backgroundColor: Colors.backgroundWhite,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: Colors.borderSubtle,
   },
   pageTitle: {
     ...Typography.pageTitle,

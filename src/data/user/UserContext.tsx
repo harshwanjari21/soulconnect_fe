@@ -18,6 +18,8 @@ export type Session = {
   durationMinutes: number;
   cost: number;
   status: 'UPCOMING' | 'COMPLETED' | 'CANCELED';
+  canReschedule?: boolean;
+  expertJoined?: boolean;
 };
 
 type UserContextType = {
@@ -29,6 +31,7 @@ type UserContextType = {
   pastSessions: Session[];
   bookSession: (session: Omit<Session, 'id' | 'status'>) => boolean;
   endSession: (sessionId: string) => void;
+  cancelSession: (sessionId: string) => void;
   savedExperts: string[];
   toggleSavedExpert: (expertId: string) => void;
 };
@@ -62,6 +65,19 @@ const MOCK_UPCOMING_SESSIONS: Session[] = [
     durationMinutes: 15,
     cost: 600,
     status: 'UPCOMING',
+    expertJoined: true, // Expert is already waiting
+  },
+  {
+    id: 'sess-mock-2',
+    expertId: 'expert-3',
+    expertName: 'Ravi Kumar',
+    expertImageUri: 'https://randomuser.me/api/portraits/men/32.jpg',
+    date: 'Tomorrow, 2:00 PM',
+    durationMinutes: 30,
+    cost: 1200,
+    status: 'UPCOMING',
+    canReschedule: true,
+    expertJoined: false, // Future session
   }
 ];
 
@@ -130,6 +146,33 @@ export function UserProvider({ children }: { children: ReactNode }) {
     });
   };
 
+  const cancelSession = (sessionId: string) => {
+    setUpcomingSessions((prev) => {
+      const session = prev.find((s) => s.id === sessionId);
+      if (session) {
+        // Calculate penalty (1 min cost)
+        const costPerMin = session.cost / session.durationMinutes;
+        const refundAmount = session.cost - costPerMin;
+        
+        // Add refund to wallet
+        setWalletBalance((b) => b + refundAmount);
+        setTransactionHistory((txs) => [
+          {
+            id: `tx-${Date.now()}`,
+            type: 'CREDIT',
+            amount: refundAmount,
+            description: `Refund for canceled session with ${session.expertName}`,
+            date: 'Just now',
+          },
+          ...txs,
+        ]);
+
+        setPastSessions((past) => [{ ...session, status: 'CANCELED' }, ...past]);
+      }
+      return prev.filter((s) => s.id !== sessionId);
+    });
+  };
+
   const toggleSavedExpert = (expertId: string) => {
     setSavedExperts((prev) =>
       prev.includes(expertId) ? prev.filter((id) => id !== expertId) : [...prev, expertId]
@@ -147,6 +190,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         pastSessions,
         bookSession,
         endSession,
+        cancelSession,
         savedExperts,
         toggleSavedExpert,
       }}

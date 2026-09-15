@@ -54,10 +54,18 @@ export function ExpertsListScreen() {
     return 0;
   });
 
+  const activeFilterCount = activeFilter === 'All' ? 0 : activeFilter.split(',').length;
+
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       <View style={styles.header}>
         <Text style={styles.pageTitle}>Experts</Text>
+        <TouchableOpacity
+          style={styles.notificationButton}
+          onPress={() => router.push('/notifications' as any)}
+        >
+          <Ionicons name="notifications-outline" size={20} color={Colors.textPrimary} />
+        </TouchableOpacity>
       </View>
 
       <View style={styles.searchContainer}>
@@ -74,13 +82,23 @@ export function ExpertsListScreen() {
       </View>
 
       <View style={styles.actionRow}>
-        <TouchableOpacity style={styles.filterBtn} onPress={() => setShowFilterModal(true)}>
-          <Ionicons name="options-outline" size={20} color={Colors.textPrimary} />
-          <Text style={styles.filterBtnText}>Filters</Text>
+        <TouchableOpacity 
+          style={[styles.filterBtn, activeFilterCount > 0 && styles.filterBtnActive]} 
+          onPress={() => setShowFilterModal(true)}
+        >
+          <Ionicons name="options-outline" size={18} color={activeFilterCount > 0 ? Colors.backgroundWhite : Colors.cosmosPlum} />
+          <Text style={[styles.filterBtnText, activeFilterCount > 0 && styles.filterBtnTextActive]}>
+            Filters {activeFilterCount > 0 ? `(${activeFilterCount})` : ''}
+          </Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.filterBtn} onPress={() => setShowSortModal(true)}>
-          <Ionicons name="swap-vertical" size={20} color={Colors.textPrimary} />
-          <Text style={styles.filterBtnText}>Sort</Text>
+        <TouchableOpacity 
+          style={[styles.filterBtn, activeSort !== 0 && styles.filterBtnActive]} 
+          onPress={() => setShowSortModal(true)}
+        >
+          <Ionicons name="swap-vertical" size={18} color={activeSort !== 0 ? Colors.backgroundWhite : Colors.cosmosPlum} />
+          <Text style={[styles.filterBtnText, activeSort !== 0 && styles.filterBtnTextActive]}>
+            Sort {activeSort !== 0 ? '(1)' : ''}
+          </Text>
         </TouchableOpacity>
       </View>
 
@@ -104,55 +122,71 @@ export function ExpertsListScreen() {
       </ScrollView>
 
       {showSortModal && (
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalCard}>
-            <Text style={styles.modalTitle}>Sort Experts By</Text>
-            {SORTS.map((sortOption, idx) => (
-              <TouchableOpacity
-                key={idx}
-                style={styles.sortOptionRow}
-                onPress={() => {
-                  setActiveSort(idx);
-                  setShowSortModal(false);
-                }}
-              >
-                <Text style={[styles.sortOptionText, activeSort === idx && styles.sortOptionTextActive]}>
-                  {sortOption}
-                </Text>
-                {activeSort === idx && <Ionicons name="checkmark" size={20} color={Colors.teal} />}
+        <View style={styles.bottomSheetOverlay}>
+          <View style={styles.bottomSheetCard}>
+            <View style={styles.modalHeaderRow}>
+              <Text style={styles.modalTitle}>Sort Experts By</Text>
+              <TouchableOpacity onPress={() => setShowSortModal(false)}>
+                <Ionicons name="close" size={24} color={Colors.textSecondary} />
               </TouchableOpacity>
-            ))}
-            <TouchableOpacity style={styles.modalCancelBtn} onPress={() => setShowSortModal(false)}>
-              <Text style={styles.modalCancelText}>Cancel</Text>
-            </TouchableOpacity>
+            </View>
+            
+            <View style={styles.modalOptionsContainer}>
+              {SORTS.map((sortOption, idx) => (
+                <TouchableOpacity
+                  key={idx}
+                  style={[styles.sortOptionRow, activeSort === idx && styles.sortOptionRowActive]}
+                  onPress={() => {
+                    setActiveSort(idx);
+                    setShowSortModal(false);
+                  }}
+                >
+                  <Text style={[styles.sortOptionText, activeSort === idx && styles.sortOptionTextActive]}>
+                    {sortOption}
+                  </Text>
+                  {activeSort === idx && <Ionicons name="star" size={16} color={Colors.gold} />}
+                </TouchableOpacity>
+              ))}
+            </View>
           </View>
         </View>
       )}
 
       {showFilterModal && (
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalCard}>
-            <Text style={styles.modalTitle}>Filter by Specialty</Text>
-            {FILTERS.map((filterOption, idx) => {
-              const isSelected = activeFilter === 'All' ? filterOption === 'All' : activeFilter.split(',').includes(filterOption);
-              return (
-                <TouchableOpacity
-                  key={idx}
-                  style={styles.checkboxRow}
-                  onPress={() => toggleFilter(filterOption)}
-                >
-                  <View style={[styles.checkbox, isSelected && styles.checkboxActive]}>
-                    {isSelected && <Ionicons name="checkmark" size={14} color={Colors.backgroundWhite} />}
-                  </View>
-                  <Text style={[styles.sortOptionText, isSelected && styles.sortOptionTextActive]}>
-                    {filterOption}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
-            <TouchableOpacity style={styles.modalConfirmBtn} onPress={() => setShowFilterModal(false)}>
-              <Text style={styles.modalConfirmBtnText}>Apply Filters</Text>
-            </TouchableOpacity>
+        <View style={styles.bottomSheetOverlay}>
+          <View style={styles.bottomSheetCard}>
+            <View style={styles.modalHeaderRow}>
+              <Text style={styles.modalTitle}>Filter by Specialty</Text>
+              <TouchableOpacity onPress={() => setActiveFilter('All')}>
+                <Text style={styles.clearAllText}>Clear All</Text>
+              </TouchableOpacity>
+            </View>
+            
+            <ScrollView style={styles.modalOptionsScroll} showsVerticalScrollIndicator={false}>
+              {FILTERS.map((filterOption, idx) => {
+                const isSelected = activeFilter === 'All' ? filterOption === 'All' : activeFilter.split(',').includes(filterOption);
+                return (
+                  <TouchableOpacity
+                    key={idx}
+                    style={styles.checkboxRow}
+                    onPress={() => toggleFilter(filterOption)}
+                  >
+                    <View style={[styles.checkbox, isSelected && styles.checkboxActive]}>
+                      {isSelected && <Ionicons name="checkmark" size={14} color={Colors.backgroundWhite} />}
+                    </View>
+                    <Text style={[styles.sortOptionText, isSelected && styles.sortOptionTextActive]}>
+                      {filterOption}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
+            
+            <View style={styles.modalFooter}>
+              <TouchableOpacity style={styles.modalConfirmBtn} onPress={() => setShowFilterModal(false)}>
+                <Text style={styles.modalConfirmBtnText}>Apply Filters</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       )}
@@ -166,9 +200,22 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.backgroundPrimary,
   },
   header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: SCREEN_PADDING_H,
     paddingTop: Spacing.sm,
     paddingBottom: Spacing.md,
+  },
+  notificationButton: {
+    width: 36,
+    height: 36,
+    borderRadius: Radius.pill,
+    backgroundColor: Colors.backgroundWhite,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: Colors.borderSubtle,
   },
   pageTitle: {
     ...Typography.pageTitle,
@@ -212,17 +259,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: Colors.backgroundWhite,
-    paddingVertical: Spacing.sm,
-    borderRadius: Radius.lg,
+    paddingVertical: 10,
+    borderRadius: Radius.pill,
     borderWidth: 1,
     borderColor: Colors.borderSubtle,
     gap: Spacing.sm,
     ...Shadows.xs,
   },
+  filterBtnActive: {
+    backgroundColor: Colors.cosmosPlum,
+    borderColor: Colors.cosmosPlum,
+  },
   filterBtnText: {
     ...Typography.body,
     fontWeight: '600',
-    color: Colors.textPrimary,
+    color: Colors.cosmosPlum,
+    fontSize: 14,
+  },
+  filterBtnTextActive: {
+    color: Colors.backgroundWhite,
   },
   scroll: {
     flex: 1,
@@ -242,63 +297,85 @@ const styles = StyleSheet.create({
   list: {
     gap: Spacing.sm,
   },
-  modalOverlay: {
+  bottomSheetOverlay: {
     position: 'absolute',
     top: 0, left: 0, right: 0, bottom: 0,
-    backgroundColor: 'rgba(63, 41, 64, 0.4)', // cosmosPlum with opacity
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: 'rgba(63, 41, 64, 0.4)',
+    justifyContent: 'flex-end',
     zIndex: 1000,
-    padding: Spacing.xl,
   },
-  modalCard: {
-    width: '100%',
-    backgroundColor: Colors.backgroundWhite,
-    borderRadius: Radius.xl,
-    padding: Spacing.xl,
-    ...Shadows.md,
+  bottomSheetCard: {
+    backgroundColor: '#FAF7F2',
+    borderTopLeftRadius: Radius.xl,
+    borderTopRightRadius: Radius.xl,
+    paddingTop: Spacing.xl,
+    paddingHorizontal: Spacing.xl,
+    paddingBottom: 40,
+    maxHeight: '80%',
+    ...Shadows.lg,
+  },
+  modalHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: Spacing.lg,
   },
   modalTitle: {
     ...Typography.sectionHeading,
-    color: Colors.textPrimary,
-    marginBottom: Spacing.lg,
+    color: Colors.cosmosPlum,
+  },
+  clearAllText: {
+    ...Typography.button,
+    color: Colors.teal,
+    fontSize: 14,
+  },
+  modalOptionsContainer: {
+    gap: Spacing.xs,
+  },
+  modalOptionsScroll: {
+    marginBottom: Spacing.md,
   },
   sortOptionRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingVertical: Spacing.md,
-    borderBottomWidth: 1,
+    paddingHorizontal: Spacing.md,
+    borderRadius: Radius.lg,
+    backgroundColor: Colors.backgroundWhite,
+    borderWidth: 1,
     borderColor: Colors.borderSubtle,
+    marginBottom: Spacing.sm,
+  },
+  sortOptionRowActive: {
+    borderColor: Colors.gold,
+    backgroundColor: Colors.goldSoft,
   },
   sortOptionText: {
     ...Typography.body,
     color: Colors.textSecondary,
+    fontWeight: '500',
   },
   sortOptionTextActive: {
-    color: Colors.teal,
+    color: Colors.cosmosPlum,
     fontWeight: '700',
-  },
-  modalCancelBtn: {
-    marginTop: Spacing.xl,
-    alignItems: 'center',
-  },
-  modalCancelText: {
-    ...Typography.button,
-    color: Colors.textTertiary,
   },
   checkboxRow: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: Spacing.md,
-    borderBottomWidth: 1,
+    paddingHorizontal: Spacing.md,
+    borderRadius: Radius.lg,
+    backgroundColor: Colors.backgroundWhite,
+    borderWidth: 1,
     borderColor: Colors.borderSubtle,
+    marginBottom: Spacing.sm,
     gap: Spacing.md,
   },
   checkbox: {
-    width: 24,
-    height: 24,
-    borderRadius: 4,
+    width: 22,
+    height: 22,
+    borderRadius: 11, // Circular premium checkbox
     borderWidth: 2,
     borderColor: Colors.borderSubtle,
     alignItems: 'center',
@@ -308,15 +385,22 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.teal,
     borderColor: Colors.teal,
   },
+  modalFooter: {
+    paddingTop: Spacing.md,
+    borderTopWidth: 1,
+    borderColor: Colors.borderSubtle,
+    marginTop: Spacing.md,
+  },
   modalConfirmBtn: {
     backgroundColor: Colors.teal,
-    marginTop: Spacing.xl,
-    paddingVertical: Spacing.md,
+    paddingVertical: 16,
     borderRadius: Radius.pill,
     alignItems: 'center',
+    ...Shadows.sm,
   },
   modalConfirmBtnText: {
     ...Typography.button,
     color: Colors.backgroundWhite,
+    fontSize: 16,
   },
 });
