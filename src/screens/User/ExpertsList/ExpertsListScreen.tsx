@@ -1,50 +1,86 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
-import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useRouter, useLocalSearchParams } from 'expo-router';
+import React, { useState, useEffect } from 'react';
+import { Image, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { EXPERTS } from '@/data/discovery';
 import { ExpertRowCard } from '@/screens/User/ExpertsList/components/ExpertRowCard';
 import { BOTTOM_NAV_HEIGHT, Colors, Radius, SCREEN_PADDING_H, Shadows, Spacing, Typography } from '@/theme';
+import { AdvancedFilterModal } from './components/AdvancedFilterModal';
 
 const FILTERS = ['All', 'Astrology', 'Tarot', 'Numerology', 'Palmistry', 'Vastu', 'Healing'];
 const SORTS = ['Rating (High to Low)', 'Price (Low to High)', 'Experience'];
 
 export function ExpertsListScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams<{ specialty?: string; category?: string }>();
+  
   const [search, setSearch] = useState('');
-  const [activeFilter, setActiveFilter] = useState('All');
   const [activeSort, setActiveSort] = useState(0);
-  const [showSortModal, setShowSortModal] = useState(false);
-  const [showFilterModal, setShowFilterModal] = useState(false);
 
-  const toggleFilter = (filter: string) => {
-    if (filter === 'All') {
-      setActiveFilter('All');
-    } else {
-      // Logic for multi-select if we wanted, but let's stick to single active for now or multi?
-      // "amazon style filter with checkboxes" implies multi-select could be expected, but let's just make it a single select checkbox list for simplicity unless multi is strict.
-      // Let's implement multi-select logic!
-      if (activeFilter === 'All') {
-        setActiveFilter(filter);
-      } else {
-        const filters = activeFilter.split(',');
-        if (filters.includes(filter)) {
-          const newFilters = filters.filter((f) => f !== filter);
-          setActiveFilter(newFilters.length > 0 ? newFilters.join(',') : 'All');
-        } else {
-          setActiveFilter([...filters, filter].join(','));
-        }
-      }
+  const [activeFilters, setActiveFilters] = useState<Record<string, boolean>>({});
+
+  const [showFilterModal, setShowFilterModal] = useState(false);
+  const [showSortModal, setShowSortModal] = useState(false);
+
+  // Initialize filter from params
+  useEffect(() => {
+    if (params.specialty) {
+      setActiveFilters({ [params.specialty!]: true });
+    } else if (params.category) {
+      setSearch(params.category);
     }
+  }, [params.specialty, params.category]);
+
+  const clearFilters = () => {
+    router.setParams({ specialty: '', category: '' });
+    setActiveFilters({});
+    setSearch('');
   };
 
-  const filteredExperts = EXPERTS.filter((expert) => {
-    const matchesSearch = expert.name.toLowerCase().includes(search.toLowerCase()) || expert.specialty.toLowerCase().includes(search.toLowerCase());
-    const filtersArray = activeFilter === 'All' ? [] : activeFilter.split(',');
-    const matchesFilter = activeFilter === 'All' || filtersArray.some((f) => expert.specialty.toLowerCase().includes(f.toLowerCase()));
-    return matchesSearch && matchesFilter;
+  const getActiveFilterCount = () => {
+    return Object.values(activeFilters).filter(Boolean).length;
+  };
+
+  const activeFilterCount = getActiveFilterCount();
+
+  let filteredExperts = EXPERTS.filter((expert) => {
+    // Search
+    const matchesSearch = expert.name.toLowerCase().includes(search.toLowerCase()) || 
+                          expert.specialty.toLowerCase().includes(search.toLowerCase());
+    if (!matchesSearch) return false;
+
+    // We get all currently active string keys
+    const activeKeys = Object.entries(activeFilters).filter(([, selected]) => selected).map(([key]) => key);
+    
+    if (activeKeys.length === 0) return true;
+
+    // If ANY filter matches, we include them (OR logic across all filters for now, or AND logic? 
+    // Usually it's OR within a category, AND across categories. Since we flattened it, we can do a simple check)
+    // For now, let's do an "every" check for strict filtering, or "some" for loose.
+    // Let's implement basic checks for the specific keys we know
+    
+    // For simplicity with flat filters, if there are active filters, the expert must match ALL active filter criteria (AND logic)
+    // or we can just say if the expert satisfies the string token.
+    const matchesFilter = (f: string) => {
+      if (expert.specialty.includes(f)) return true;
+      if (f === '4.5 & up' && expert.rating >= 4.5) return true;
+      if (f === '4.0 & up' && expert.rating >= 4.0) return true;
+      if (f === '3.0 & up' && expert.rating >= 3.0) return true;
+      if (f === 'Under ₹25/min' && expert.pricePerMin < 25) return true;
+      if (f === '₹25 - ₹50/min' && expert.pricePerMin >= 25 && expert.pricePerMin <= 50) return true;
+      if (f === 'Above ₹50/min' && expert.pricePerMin > 50) return true;
+      
+      // Languages
+      if (expert.languages && expert.languages.includes(f)) return true;
+
+      return false;
+    };
+
+    // We will group active keys by category roughly to apply OR within category and AND across.
+    // To keep it simple like PanditG, we just require all selected filter tags to match.
+    return activeKeys.every(f => matchesFilter(f));
   });
 
   const sortedExperts = [...filteredExperts].sort((a, b) => {
@@ -53,8 +89,6 @@ export function ExpertsListScreen() {
     if (activeSort === 2) return b.experienceYears - a.experienceYears;
     return 0;
   });
-
-  const activeFilterCount = activeFilter === 'All' ? 0 : activeFilter.split(',').length;
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
@@ -67,6 +101,17 @@ export function ExpertsListScreen() {
           <Ionicons name="notifications-outline" size={20} color={Colors.textPrimary} />
         </TouchableOpacity>
       </View>
+
+      {(params.specialty || params.category) && (
+        <View style={styles.contextBanner}>
+          <Text style={styles.contextText}>
+            Showing experts for: <Text style={styles.contextHighlight}>{params.specialty || params.category}</Text>
+          </Text>
+          <TouchableOpacity onPress={clearFilters}>
+            <Ionicons name="close-circle" size={20} color={Colors.cosmosPlum} />
+          </TouchableOpacity>
+        </View>
+      )}
 
       <View style={styles.searchContainer}>
         <View style={styles.searchBar}>
@@ -121,7 +166,19 @@ export function ExpertsListScreen() {
         <View style={{ height: BOTTOM_NAV_HEIGHT + Spacing.xxl }} />
       </ScrollView>
 
-      {showSortModal && (
+      {/* Advanced Filter Modal */}
+      <AdvancedFilterModal
+        visible={showFilterModal}
+        initialFilters={activeFilters}
+        onClose={() => setShowFilterModal(false)}
+        onApply={(filters) => {
+          setActiveFilters(filters);
+          setShowFilterModal(false);
+        }}
+      />
+
+      {/* Sleek Sort Bottom Sheet */}
+      <Modal visible={showSortModal} animationType="slide" transparent={true} onRequestClose={() => setShowSortModal(false)}>
         <View style={styles.bottomSheetOverlay}>
           <View style={styles.bottomSheetCard}>
             <View style={styles.modalHeaderRow}>
@@ -150,46 +207,7 @@ export function ExpertsListScreen() {
             </View>
           </View>
         </View>
-      )}
-
-      {showFilterModal && (
-        <View style={styles.bottomSheetOverlay}>
-          <View style={styles.bottomSheetCard}>
-            <View style={styles.modalHeaderRow}>
-              <Text style={styles.modalTitle}>Filter by Specialty</Text>
-              <TouchableOpacity onPress={() => setActiveFilter('All')}>
-                <Text style={styles.clearAllText}>Clear All</Text>
-              </TouchableOpacity>
-            </View>
-            
-            <ScrollView style={styles.modalOptionsScroll} showsVerticalScrollIndicator={false}>
-              {FILTERS.map((filterOption, idx) => {
-                const isSelected = activeFilter === 'All' ? filterOption === 'All' : activeFilter.split(',').includes(filterOption);
-                return (
-                  <TouchableOpacity
-                    key={idx}
-                    style={styles.checkboxRow}
-                    onPress={() => toggleFilter(filterOption)}
-                  >
-                    <View style={[styles.checkbox, isSelected && styles.checkboxActive]}>
-                      {isSelected && <Ionicons name="checkmark" size={14} color={Colors.backgroundWhite} />}
-                    </View>
-                    <Text style={[styles.sortOptionText, isSelected && styles.sortOptionTextActive]}>
-                      {filterOption}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </ScrollView>
-            
-            <View style={styles.modalFooter}>
-              <TouchableOpacity style={styles.modalConfirmBtn} onPress={() => setShowFilterModal(false)}>
-                <Text style={styles.modalConfirmBtnText}>Apply Filters</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      )}
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -216,6 +234,24 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderWidth: 1,
     borderColor: Colors.borderSubtle,
+  },
+  contextBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: Colors.tealSoft,
+    marginHorizontal: SCREEN_PADDING_H,
+    marginBottom: Spacing.sm,
+    paddingVertical: 10,
+    paddingHorizontal: Spacing.md,
+    borderRadius: Radius.md,
+  },
+  contextText: {
+    ...Typography.body,
+    color: Colors.cosmosPlum,
+  },
+  contextHighlight: {
+    fontWeight: '700',
   },
   pageTitle: {
     ...Typography.pageTitle,
@@ -298,11 +334,9 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   bottomSheetOverlay: {
-    position: 'absolute',
-    top: 0, left: 0, right: 0, bottom: 0,
+    flex: 1,
     backgroundColor: 'rgba(63, 41, 64, 0.4)',
     justifyContent: 'flex-end',
-    zIndex: 1000,
   },
   bottomSheetCard: {
     backgroundColor: '#FAF7F2',
@@ -310,8 +344,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: Radius.xl,
     paddingTop: Spacing.xl,
     paddingHorizontal: Spacing.xl,
-    paddingBottom: 40,
-    maxHeight: '80%',
+    paddingBottom: Spacing.xl, // using padding instead of bottom spacing to account for native Modal
     ...Shadows.lg,
   },
   modalHeaderRow: {
@@ -324,16 +357,8 @@ const styles = StyleSheet.create({
     ...Typography.sectionHeading,
     color: Colors.cosmosPlum,
   },
-  clearAllText: {
-    ...Typography.button,
-    color: Colors.teal,
-    fontSize: 14,
-  },
   modalOptionsContainer: {
     gap: Spacing.xs,
-  },
-  modalOptionsScroll: {
-    marginBottom: Spacing.md,
   },
   sortOptionRow: {
     flexDirection: 'row',
@@ -359,48 +384,5 @@ const styles = StyleSheet.create({
   sortOptionTextActive: {
     color: Colors.cosmosPlum,
     fontWeight: '700',
-  },
-  checkboxRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: Spacing.md,
-    paddingHorizontal: Spacing.md,
-    borderRadius: Radius.lg,
-    backgroundColor: Colors.backgroundWhite,
-    borderWidth: 1,
-    borderColor: Colors.borderSubtle,
-    marginBottom: Spacing.sm,
-    gap: Spacing.md,
-  },
-  checkbox: {
-    width: 22,
-    height: 22,
-    borderRadius: 11, // Circular premium checkbox
-    borderWidth: 2,
-    borderColor: Colors.borderSubtle,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  checkboxActive: {
-    backgroundColor: Colors.teal,
-    borderColor: Colors.teal,
-  },
-  modalFooter: {
-    paddingTop: Spacing.md,
-    borderTopWidth: 1,
-    borderColor: Colors.borderSubtle,
-    marginTop: Spacing.md,
-  },
-  modalConfirmBtn: {
-    backgroundColor: Colors.teal,
-    paddingVertical: 16,
-    borderRadius: Radius.pill,
-    alignItems: 'center',
-    ...Shadows.sm,
-  },
-  modalConfirmBtnText: {
-    ...Typography.button,
-    color: Colors.backgroundWhite,
-    fontSize: 16,
   },
 });

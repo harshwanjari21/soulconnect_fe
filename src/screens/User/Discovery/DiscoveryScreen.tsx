@@ -52,12 +52,16 @@ export function DiscoveryScreen() {
 
         {/* Guidance categories — 22px gap */}
         <View style={[styles.padded, { marginTop: 22 }]}>
-          <GuidanceGrid />
+          <GuidanceGrid 
+            onCategoryPress={(item) => router.push(`/experts?category=${item.id}` as any)} 
+          />
         </View>
 
         {/* Explore practices — 28px gap */}
         <View style={[styles.padded, { marginTop: Spacing['3xl'] - Spacing.xs }]}>
-          <PracticeGrid />
+          <PracticeGrid 
+            onPracticePress={(item) => router.push(`/experts?specialty=${item.title}` as any)} 
+          />
         </View>
 
         {/* Cosmic Insight — 28px gap */}
