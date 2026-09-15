@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Circle, Path } from 'react-native-svg';
 
@@ -12,24 +12,37 @@ export function WalletScreen() {
   const router = useRouter();
   const { walletBalance, transactionHistory, addFunds } = useUser();
   const [selectedQuickAdd, setSelectedQuickAdd] = useState<number>(1000);
+  const [customAmount, setCustomAmount] = useState<string>('');
+  const [txFilter, setTxFilter] = useState<'ALL' | 'ADDED' | 'SPENT'>('ALL');
 
   const quickAmounts = [500, 1000, 2000];
 
   const handleQuickAdd = (amount: number) => {
     setSelectedQuickAdd(amount);
+    setCustomAmount('');
+  };
+
+  const getRechargeAmount = () => {
+    if (customAmount && !isNaN(parseInt(customAmount))) {
+      return parseInt(customAmount);
+    }
+    return selectedQuickAdd;
   };
 
   const handleAddFunds = () => {
+    const amount = getRechargeAmount();
+    if (amount <= 0) return;
     Alert.alert(
       'Recharge Wallet',
-      `Add ₹${selectedQuickAdd.toLocaleString()} to your ConsultLive wallet using UPI/Card?`,
+      `Add ₹${amount.toLocaleString()} to your ConsultLive wallet using UPI/Card?`,
       [
         { text: 'Cancel', style: 'cancel' },
         {
           text: 'Proceed to Pay',
           onPress: () => {
-            addFunds(selectedQuickAdd);
-            Alert.alert('Success', `₹${selectedQuickAdd.toLocaleString()} added to your wallet!`);
+            addFunds(amount);
+            setCustomAmount('');
+            Alert.alert('Success', `₹${amount.toLocaleString()} added to your wallet!`);
           },
         },
       ],
@@ -44,7 +57,7 @@ export function WalletScreen() {
           <Ionicons name="arrow-back" size={24} color={Colors.textPrimary} />
         </TouchableOpacity>
         <Text style={styles.pageTitle}>Wallet</Text>
-        <View style={{ width: 24 }} /> {/* Spacer */}
+        <View style={{ width: 24 }} />
       </View>
 
       <ScrollView
@@ -81,9 +94,24 @@ export function WalletScreen() {
           </View>
         </View>
 
-        {/* Quick Add Money Section */}
+        {/* Add Money Section */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>QUICK ADD MONEY</Text>
+          <Text style={styles.sectionTitle}>RECHARGE WALLET</Text>
+          
+          <View style={styles.customAmountContainer}>
+            <Text style={styles.currencySymbol}>₹</Text>
+            <TextInput
+              style={styles.customAmountInput}
+              value={customAmount}
+              onChangeText={(text) => {
+                setCustomAmount(text);
+                if (text) setSelectedQuickAdd(0);
+              }}
+              placeholder="Enter custom amount"
+              keyboardType="number-pad"
+            />
+          </View>
+
           <View style={styles.quickAddRow}>
             {quickAmounts.map((amt) => {
               const isSelected = selectedQuickAdd === amt;
@@ -116,18 +144,30 @@ export function WalletScreen() {
         <View style={styles.section}>
           <View style={styles.transactionsHeader}>
             <Text style={styles.transactionsTitle}>Transactions</Text>
-            <TouchableOpacity
-              style={styles.filterBtn}
-              onPress={() => Alert.alert('Filter', 'Filter by Credits, Debits or Date range')}
-            >
-              <Text style={styles.filterBtnText}>FILTER</Text>
-            </TouchableOpacity>
+          </View>
+
+          <View style={styles.filterTabs}>
+            {['ALL', 'ADDED', 'SPENT'].map(tab => (
+              <TouchableOpacity
+                key={tab}
+                style={[styles.filterTab, txFilter === tab && styles.filterTabActive]}
+                onPress={() => setTxFilter(tab as any)}
+              >
+                <Text style={[styles.filterTabText, txFilter === tab && styles.filterTabTextActive]}>
+                  {tab}
+                </Text>
+              </TouchableOpacity>
+            ))}
           </View>
 
           <View style={styles.transactionsList}>
-            {transactionHistory.map((tx) => {
+            {transactionHistory.filter(tx => {
+              if (txFilter === 'ALL') return true;
+              if (txFilter === 'ADDED') return tx.type === 'CREDIT';
+              return tx.type === 'DEBIT';
+            }).map((tx) => {
               const isDebit = tx.type === 'DEBIT';
-              const title = isDebit ? 'Consultation debit' : 'Wallet credit';
+              const title = isDebit ? 'Consultation' : 'Wallet Recharge';
               const iconName = isDebit ? 'call' : 'add';
 
               return (
@@ -144,7 +184,7 @@ export function WalletScreen() {
                   {/* Middle Details */}
                   <View style={styles.txMiddle}>
                     <Text style={styles.txTitle}>{title}</Text>
-                    <Text style={styles.txSubtitle}>{tx.description}</Text>
+                    <Text style={styles.txSubtitle} numberOfLines={1}>{tx.description}</Text>
                     <Text style={styles.txDate}>{tx.date}</Text>
                   </View>
 
@@ -156,7 +196,7 @@ export function WalletScreen() {
                         isDebit ? styles.txAmountDebit : styles.txAmountCredit,
                       ]}
                     >
-                      {isDebit ? `-₹${tx.amount}.00` : `+₹${tx.amount.toLocaleString()}.00`}
+                      {isDebit ? `-₹${tx.amount}` : `+₹${tx.amount.toLocaleString()}`}
                     </Text>
                     <Text style={styles.txStatusSuccess}>SUCCESS</Text>
                   </View>
@@ -260,6 +300,29 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: Spacing.sm,
   },
+  customAmountContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: Colors.borderSubtle,
+    borderRadius: Radius.md,
+    paddingHorizontal: Spacing.md,
+    backgroundColor: Colors.backgroundWhite,
+    height: 48,
+    marginBottom: Spacing.md,
+  },
+  currencySymbol: {
+    ...Typography.body,
+    fontWeight: '600',
+    color: Colors.textSecondary,
+    marginRight: 8,
+  },
+  customAmountInput: {
+    flex: 1,
+    ...Typography.body,
+    fontWeight: '600',
+    color: Colors.textPrimary,
+  },
   quickAddBtn: {
     flex: 1,
     backgroundColor: Colors.backgroundWhite,
@@ -291,8 +354,32 @@ const styles = StyleSheet.create({
   },
   transactionsTitle: {
     ...Typography.sectionHeading,
-    color: Colors.textPrimary,
-    fontSize: 18,
+    color: Colors.cosmosPlum,
+  },
+  filterTabs: {
+    flexDirection: 'row',
+    gap: Spacing.sm,
+    marginBottom: Spacing.md,
+  },
+  filterTab: {
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: Radius.pill,
+    borderWidth: 1,
+    borderColor: Colors.borderSubtle,
+    backgroundColor: Colors.backgroundWhite,
+  },
+  filterTabActive: {
+    borderColor: Colors.teal,
+    backgroundColor: Colors.tealSoft,
+  },
+  filterTabText: {
+    ...Typography.caption,
+    fontWeight: '600',
+    color: Colors.textSecondary,
+  },
+  filterTabTextActive: {
+    color: Colors.teal,
   },
   filterBtn: {
     paddingVertical: 2,
@@ -306,7 +393,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.6,
   },
   transactionsList: {
-    gap: Spacing.sm,
+    gap: Spacing.md,
   },
   txRow: {
     flexDirection: 'row',

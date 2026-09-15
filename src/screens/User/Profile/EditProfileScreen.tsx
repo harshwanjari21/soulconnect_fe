@@ -40,7 +40,9 @@ export function EditProfileScreen() {
         value={showPickerModal === 'DATE' ? dob : tob}
         mode={showPickerModal === 'DATE' ? 'date' : 'time'}
         display="default"
-        onChange={handleDateChange}
+        onChange={handleDateChange} // Keeping it for compatibility if some props are missing, but adding the new ones
+        onValueChange={handleDateChange}
+        onDismiss={() => setShowPickerModal(null)}
       />
     );
   };

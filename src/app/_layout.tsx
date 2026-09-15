@@ -34,6 +34,7 @@ function DynamicBottomNavigation() {
 }
 
 import { UserProvider } from '@/data/user/UserContext';
+import { StatusBar } from 'expo-status-bar';
 
 export default function RootLayout() {
   useEffect(() => {
@@ -44,6 +45,7 @@ export default function RootLayout() {
   return (
     <UserProvider>
       <View style={styles.root}>
+        <StatusBar style="dark" hidden={false} />
         <Stack screenOptions={{ headerShown: false, animation: 'fade' }} />
         <DynamicBottomNavigation />
       </View>

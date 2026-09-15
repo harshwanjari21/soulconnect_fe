@@ -18,7 +18,8 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.harshwanjari21.soulconnect_fe"
+      "package": "com.harshwanjari21.soulconnect_fe",
+      "softwareKeyboardLayoutMode": "resize"
     },
     "web": {
       "output": "static",
