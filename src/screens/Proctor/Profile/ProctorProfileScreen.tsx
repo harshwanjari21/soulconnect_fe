@@ -74,7 +74,7 @@ export function ProctorProfileScreen() {
 
           {profile.isVerified && (
             <View style={styles.verifiedBadge}>
-              <Ionicons name="checkmark-circle" size={15} color="#22C55E" />
+              <Ionicons name="checkmark-circle" size={15} color={Colors.success} />
               <Text style={styles.verifiedText}>VERIFIED</Text>
             </View>
           )}
@@ -272,7 +272,7 @@ const styles = StyleSheet.create({
   verifiedText: {
     ...Typography.caption,
     fontWeight: '800',
-    color: '#22C55E',
+    color: Colors.success,
     letterSpacing: 0.6,
     fontSize: 11,
   },
@@ -327,7 +327,7 @@ const styles = StyleSheet.create({
   sectionHeading: {
     ...Typography.caption,
     fontWeight: '800',
-    color: '#8A92A0',
+    color: Colors.textMuted,
     letterSpacing: 0.8,
     fontSize: 12,
   },
@@ -349,7 +349,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 7,
     borderWidth: 1,
-    borderColor: '#D4E2F0',
+    borderColor: Colors.borderBlueSoft,
   },
   specialtyText: {
     ...Typography.caption,

@@ -33,7 +33,6 @@ export function ExpertCard({ expert, onCallPress, onCardPress }: ExpertCardProps
       style={styles.card}
       onPress={() => onCardPress?.(expert)}
       activeOpacity={0.93}
-      accessibilityRole="button"
       accessibilityLabel={`${expert.name}, ${expert.specialty}`}
     >
       {/* 1. PERSON — photo is the dominant visual element */}

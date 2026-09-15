@@ -36,7 +36,7 @@ export function KundliChart({
             y="2"
             width={size - 4}
             height={size - 4}
-            fill="#FFFDF8"
+            fill={Colors.chartBackground}
             stroke={Colors.gold}
             strokeWidth="2"
             rx="4"
