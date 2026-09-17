@@ -81,8 +81,15 @@ export function ExpertScreen() {
       cost: selectedPrice * 15,
     });
     if (success) {
-      if (isAvailable) router.push(`/consultation/${expert.id}` as any);
-      else router.push('/sessions');
+      if (isAvailable) {
+        if (selectedMode === 'chat') {
+          router.push(`/chat/${expert.id}` as any);
+        } else {
+          router.push(`/consultation/${expert.id}` as any);
+        }
+      } else {
+        router.push('/sessions');
+      }
     }
   };
 
