@@ -53,7 +53,7 @@ export function SettingsScreen() {
           icon: 'time-outline',
           iconBg: Colors.goldSoft,
           iconColor: Colors.gold,
-          onPress: () => router.push('/proctor/schedule' as any),
+          onPress: () => router.push({ pathname: '/proctor/schedule' as any, params: { tab: 'hours' } }),
         },
         {
           id: 'expertise',

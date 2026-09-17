@@ -9,7 +9,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Image } from 'expo-image';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useMemo, useState } from 'react';
 import {
   Alert,
@@ -101,7 +101,10 @@ function buildUpcomingDays(count: number): { label: string; isSpecial: boolean }
 
 export function ProctorScheduleScreen() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<ScheduleTab>('appointments');
+  const { tab } = useLocalSearchParams<{ tab?: string }>();
+  const [activeTab, setActiveTab] = useState<ScheduleTab>(
+    tab === 'hours' ? 'hours' : 'appointments',
+  );
   const [appointments, setAppointments] = useState<ScheduledAppointment[]>(MOCK_SCHEDULED_APPOINTMENTS);
   const [selectedDay, setSelectedDay] = useState('Today');
   const [availability, setAvailability] = useState<DayAvailability[]>(DEFAULT_AVAILABILITY);
