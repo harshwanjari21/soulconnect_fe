@@ -65,7 +65,23 @@ export function ProctorDashboardScreen() {
 
   const handleAcceptRequest = (request: ConsultationRequest) => {
     setIncomingReq(null);
-    // Navigate to live consultation workspace with request details
+
+    if (request.consultationType === 'chat') {
+      // Navigate to live chat consultation workspace
+      router.push({
+        pathname: '/proctor/chat',
+        params: {
+          requestId: request.id,
+          clientName: request.clientName,
+          clientAvatar: request.clientAvatar,
+          ratePerMin: request.ratePerMin,
+          topic: request.topic,
+        },
+      } as any);
+      return;
+    }
+
+    // Navigate to live audio/video consultation workspace with request details
     router.push({
       pathname: '/proctor/consultation',
       params: {

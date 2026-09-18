@@ -46,6 +46,13 @@ export function IncomingRequestModal({
 
   if (!request) return null;
 
+  const typeIcon =
+    request.consultationType === 'video'
+      ? 'videocam'
+      : request.consultationType === 'chat'
+      ? 'chatbubble-ellipses'
+      : 'call';
+
   return (
     <Modal
       transparent
@@ -58,7 +65,7 @@ export function IncomingRequestModal({
           {/* Header & Rings */}
           <View style={styles.header}>
             <View style={styles.callBadge}>
-              <Ionicons name="call" size={16} color={Colors.teal} />
+              <Ionicons name={typeIcon as any} size={16} color={Colors.teal} />
               <Text style={styles.callBadgeText}>INCOMING CONSULTATION</Text>
             </View>
             <View style={styles.timerPill}>
@@ -121,7 +128,7 @@ export function IncomingRequestModal({
               accessibilityRole="button"
               accessibilityLabel="Accept & Start"
             >
-              <Ionicons name="call" size={20} color={Colors.backgroundWhite} />
+              <Ionicons name={typeIcon as any} size={20} color={Colors.backgroundWhite} />
               <Text style={styles.acceptButtonText}>Accept & Start</Text>
             </TouchableOpacity>
           </View>

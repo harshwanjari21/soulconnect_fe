@@ -139,6 +139,27 @@ export const MOCK_ACTIVE_QUEUE: ConsultationRequest[] = [
     },
     notes: 'Guna Milan evaluation and Mangal dosha query.',
   },
+  {
+    id: 'req-003',
+    clientName: 'Ishaan Kulkarni',
+    clientAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
+    consultationType: 'chat',
+    topic: 'Daily Horoscope & Career Doubts',
+    ratePerMin: 15,
+    requestedAt: '1m ago',
+    waitingDurationSec: 60,
+    clientBirthDetails: {
+      dob: '05 Jun 1998',
+      tob: '02:20 PM',
+      pob: 'Pune, India',
+      gender: 'Male',
+      sunSign: 'Gemini',
+      moonSign: 'Pisces',
+      lagna: 'Cancer',
+      nakshatra: 'Rohini',
+    },
+    notes: 'Quick text chat about upcoming job interview timing.',
+  },
 ];
 
 export const MOCK_COMPLETED_SESSIONS: CompletedSession[] = [
